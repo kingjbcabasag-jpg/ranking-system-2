@@ -8,145 +8,144 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
     <!-- LOGIN SCREEN -->
-    <!-- ========================================== -->
-    <div id="loginScreen" class="login-overlay">
-        <div class="login-card">
-            <div class="login-logo">EDU<span>SYSTEM</span></div>
-            <p class="login-subtitle">Teacher & Admin Portal</p>
+    <div id="loginView" class="login-wrapper">
+        <div class="login-box" id="loginBox">
+            <div class="brand-title">EDU<span>TRACK</span></div>
+            <p class="subtitle">Student Attendance & Ranking System</p>
             
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter username (admin)" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter password (1234)" required>
-                </div>
-                <p id="loginError" class="error-msg">Invalid username or password!</p>
-                <button type="submit" class="btn-login">Sign In</button>
-            </form>
-            <div class="login-hint">Default: <b>admin</b> / <b>1234</b></div>
+            <div class="field">
+                <label>Username</label>
+                <input type="text" id="userInput" placeholder="Enter admin" value="admin">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="passInput" placeholder="Enter 1234" value="1234">
+            </div>
+            
+            <p id="errMsg" class="error-text">Wrong username or password!</p>
+            <button type="button" id="loginBtn" class="btn-primary">Login to Dashboard</button>
+            <div class="hint">Default: <b>admin</b> / <b>1234</b></div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MAIN DASHBOARD SYSTEM -->
-    <!-- ========================================== -->
-    <div id="appContainer" class="container hidden">
-        <!-- Sidebar Navigation -->
+    <!-- MAIN SYSTEM DASHBOARD -->
+    <div id="dashboardView" class="app-wrapper" style="display: none;">
         <aside class="sidebar">
-            <div class="brand">EDU<span>SYSTEM</span></div>
-            <ul>
-                <li class="active" onclick="showSection('dashboard', this)">Dashboard</li>
-                <li onclick="showSection('attendance', this)">Attendance</li>
-                <li onclick="showSection('students', this)">Register Student</li>
-                <li onclick="showSection('ranking', this)">Rankings</li>
+            <div class="sidebar-header">EDU<span>TRACK</span></div>
+            <ul class="nav-links">
+                <li class="nav-item active" data-target="sec-dashboard">Dashboard</li>
+                <li class="nav-item" data-target="sec-attendance">Attendance</li>
+                <li class="nav-item" data-target="sec-students">Students</li>
+                <li class="nav-item" data-target="sec-ranking">Rankings</li>
             </ul>
-            <div class="sidebar-footer">
-                <button onclick="logout()" class="btn-logout">Logout</button>
-            </div>
+            <button type="button" id="logoutBtn" class="btn-logout">Logout</button>
         </aside>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header>
-                <h2 id="page-title">Dashboard</h2>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search student name or ID..." onkeyup="searchStudent()">
-                </div>
+        <main class="content-area">
+            <header class="topbar">
+                <h2 id="headerTitle">Dashboard</h2>
+                <input type="text" id="searchBox" class="search-input" placeholder="Search name or ID...">
             </header>
 
-            <!-- SECTION 1: DASHBOARD -->
-            <section id="dashboard" class="content-section active">
-                <div class="cards">
-                    <div class="card">
-                        <h3>Total Students</h3>
-                        <p id="totalStudents">0</p>
+            <!-- TAB 1: DASHBOARD -->
+            <section id="sec-dashboard" class="tab-panel active">
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <span>Total Enrolled</span>
+                        <h1 id="statTotal">0</h1>
                     </div>
-                    <div class="card">
-                        <h3>Top Ranked Student</h3>
-                        <p id="topStudent">None</p>
+                    <div class="stat-card green">
+                        <span>Top 1 Student</span>
+                        <h1 id="statTop">-</h1>
                     </div>
                 </div>
-                <h3>Quick Summary</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Total Present (5 Days)</th>
-                            <th>Exam Score</th>
-                            <th>Total Points</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dashboardTableBody"></tbody>
-                </table>
+
+                <h3>Class Overview</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student Name</th>
+                                <th>Attendance (5 Days)</th>
+                                <th>Exam Score</th>
+                                <th>Total Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblDashboard"></tbody>
+                    </table>
+                </div>
             </section>
 
-            <!-- SECTION 2: ATTENDANCE -->
-            <section id="attendance" class="content-section">
-                <h3>Daily Attendance Sheet (Check for Present)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Day 1</th>
-                            <th>Day 2</th>
-                            <th>Day 3</th>
-                            <th>Day 4</th>
-                            <th>Day 5</th>
-                            <th>Excuse / Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTableBody"></tbody>
-                </table>
+            <!-- TAB 2: ATTENDANCE (2D ARRAY) -->
+            <section id="sec-attendance" class="tab-panel">
+                <h3>Daily Attendance Sheet</h3>
+                <p class="desc">Check the boxes to mark student as Present.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Remarks / Excuse</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblAttendance"></tbody>
+                    </table>
+                </div>
             </section>
 
-            <!-- SECTION 3: REGISTER STUDENT -->
-            <section id="students" class="content-section">
-                <h3>Register New Student</h3>
-                <form id="registerForm" class="form-box">
-                    <input type="text" id="studentId" placeholder="Student ID (e.g., 105)" required>
-                    <input type="text" id="studentName" placeholder="Full Name" required>
-                    <input type="number" id="studentScore" placeholder="Exam Score (0-100)" min="0" max="100" required>
-                    <button type="submit">Add Student</button>
-                </form>
+            <!-- TAB 3: REGISTER STUDENTS (LINKED LIST) -->
+            <section id="sec-students" class="tab-panel">
+                <h3>Add New Student</h3>
+                <div class="add-form">
+                    <input type="text" id="newId" placeholder="Student ID (e.g. 105)">
+                    <input type="text" id="newName" placeholder="Full Name">
+                    <input type="number" id="newScore" placeholder="Exam Score (0-100)" min="0" max="100">
+                    <button type="button" id="addStudentBtn" class="btn-add">+ Add Student</button>
+                </div>
 
-                <h3>Student List (Linked List Nodes)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Exam Score</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentListBody"></tbody>
-                </table>
+                <h3>Enrolled Students (Linked List)</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Exam Score</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblStudents"></tbody>
+                    </table>
+                </div>
             </section>
 
-            <!-- SECTION 4: RANKING -->
-            <section id="ranking" class="content-section">
-                <h3>Student Performance & Attendance Rankings</h3>
-                <p class="subtitle">Sorted by Total Points (Attendance x 10 + Exam Score)</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Days Present</th>
-                            <th>Exam Score</th>
-                            <th>Total Points</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rankingTableBody"></tbody>
-                </table>
+            <!-- TAB 4: RANKINGS (BUBBLE SORT) -->
+            <section id="sec-ranking" class="tab-panel">
+                <h3>Student Rankings</h3>
+                <p class="desc">Formula: (Days Present × 10) + Exam Score</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Days Present</th>
+                                <th>Exam Score</th>
+                                <th>Total Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblRanking"></tbody>
+                    </table>
+                </div>
             </section>
         </main>
     </div>
@@ -154,4 +153,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-Compose

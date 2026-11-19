@@ -1,211 +1,197 @@
 // ==========================================
-// 0. LOGIN & LOGOUT SYSTEM (FIXED)
+// 1. DSA: LINKED LIST & 2D ARRAY STRUCTURE
 // ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-    const loginScreen = document.getElementById('loginScreen');
-    const appContainer = document.getElementById('appContainer');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    const loginCard = document.querySelector('.login-card');
-
-    if (!loginForm) return;
-
-    loginForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const user = document.getElementById('username').value.trim();
-        const pass = document.getElementById('password').value.trim();
-
-        if (user === "admin" && pass === "1234") {
-            loginError.style.display = "none";
-            loginScreen.style.opacity = "0";
-            loginScreen.style.pointerEvents = "none";
-
-            setTimeout(() => {
-                loginScreen.style.display = "none";
-                appContainer.classList.remove('hidden');
-                appContainer.style.display = "flex";
-                if (typeof renderAll === "function") {
-                    renderAll();
-                }
-            }, 300);
-        } else {
-            loginError.style.display = "block";
-            if (loginCard) {
-                loginCard.classList.remove('shake');
-                void loginCard.offsetWidth;
-                loginCard.classList.add('shake');
-            }
-        }
-    });
-});
-
-function logout() {
-    const loginScreen = document.getElementById('loginScreen');
-    const appContainer = document.getElementById('appContainer');
-    const loginForm = document.getElementById('loginForm');
-
-    appContainer.style.display = "none";
-    appContainer.classList.add('hidden');
-
-    loginScreen.style.display = "flex";
-    loginScreen.style.pointerEvents = "auto";
-    setTimeout(() => {
-        loginScreen.style.opacity = "1";
-    }, 10);
-
-    if (loginForm) loginForm.reset();
-}
-
-// ==========================================
-// 1. LINKED LIST IMPLEMENTATION (Dynamic Student Management)
-// ==========================================
-class StudentNode {
+class Node {
     constructor(id, name, score) {
         this.id = id;
         this.name = name;
         this.score = Number(score);
-        // 2D Array concept: bawat estudyante ay may array para sa 5 days attendance
-        this.attendance = [1, 1, 1, 1, 1]; // 1 = Present, 0 = Absent
+        this.attendance = [1, 1, 1, 1, 1]; // 5-day attendance array
         this.remarks = "";
         this.next = null;
     }
 }
 
-class StudentLinkedList {
+class LinkedList {
     constructor() {
         this.head = null;
     }
 
-    append(id, name, score) {
-        const newNode = new StudentNode(id, name, score);
+    add(id, name, score) {
+        const newNode = new Node(id, name, score);
         if (!this.head) {
             this.head = newNode;
             return;
         }
-        let current = this.head;
-        while (current.next) {
-            current = current.next;
+        let curr = this.head;
+        while (curr.next) {
+            curr = curr.next;
         }
-        current.next = newNode;
+        curr.next = newNode;
     }
 
-    delete(id) {
+    remove(id) {
         if (!this.head) return;
         if (this.head.id === id) {
             this.head = this.head.next;
             return;
         }
-        let current = this.head;
-        while (current.next && current.next.id !== id) {
-            current = current.next;
+        let curr = this.head;
+        while (curr.next && curr.next.id !== id) {
+            curr = curr.next;
         }
-        if (current.next) {
-            current.next = current.next.next;
+        if (curr.next) {
+            curr.next = curr.next.next;
         }
     }
 
-    toArray() {
-        const arr = [];
-        let current = this.head;
-        while (current) {
-            arr.push(current);
-            current = current.next;
+    getAll() {
+        const list = [];
+        let curr = this.head;
+        while (curr) {
+            list.push(curr);
+            curr = curr.next;
         }
-        return arr;
+        return list;
     }
 }
 
-// ==========================================
-// INITIAL DATA SETUP
-// ==========================================
-const studentList = new StudentLinkedList();
-studentList.append("101", "Juan Dela Cruz", 88);
-studentList.append("102", "Maria Clara", 95);
-studentList.append("103", "Jose Rizal", 92);
-studentList.append("104", "Andres Bonifacio", 85);
+// Initial Sample Data
+const db = new LinkedList();
+db.add("101", "Juan Dela Cruz", 88);
+db.add("102", "Maria Clara", 95);
+db.add("103", "Jose Rizal", 92);
+db.add("104", "Andres Bonifacio", 85);
 
 // ==========================================
-// NAVIGATION SWITCHING
+// 2. LOGIN & LOGOUT LOGIC (NO FORM RELOAD)
 // ==========================================
-function showSection(sectionId, element) {
-    document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
+const loginView = document.getElementById("loginView");
+const dashboardView = document.getElementById("dashboardView");
+const loginBox = document.getElementById("loginBox");
+const errMsg = document.getElementById("errMsg");
 
-    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
-    element.classList.add('active');
+document.getElementById("loginBtn").addEventListener("click", function () {
+    const user = document.getElementById("userInput").value.trim();
+    const pass = document.getElementById("passInput").value.trim();
 
-    document.getElementById('page-title').innerText = element.innerText;
-    renderAll();
-}
+    if (user === "admin" && pass === "1234") {
+        errMsg.style.display = "none";
+        loginView.style.opacity = "0";
+        setTimeout(() => {
+            loginView.style.display = "none";
+            dashboardView.style.display = "flex";
+            refreshUI();
+        }, 250);
+    } else {
+        errMsg.style.display = "block";
+        loginBox.classList.remove("shake");
+        void loginBox.offsetWidth;
+        loginBox.classList.add("shake");
+    }
+});
+
+// Enter key support sa password input
+document.getElementById("passInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+        document.getElementById("loginBtn").click();
+    }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", function () {
+    dashboardView.style.display = "none";
+    loginView.style.display = "flex";
+    setTimeout(() => {
+        loginView.style.opacity = "1";
+    }, 10);
+});
 
 // ==========================================
-// REGISTER & DELETE STUDENTS
+// 3. TAB NAVIGATION
 // ==========================================
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const id = document.getElementById('studentId').value.trim();
-    const name = document.getElementById('studentName').value.trim();
-    const score = document.getElementById('studentScore').value;
+document.querySelectorAll(".nav-item").forEach(item => {
+    item.addEventListener("click", function () {
+        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
+        this.classList.add("active");
 
-    const exists = studentList.toArray().some(s => s.id === id);
-    if (exists) {
+        const target = this.getAttribute("data-target");
+        document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+        document.getElementById(target).classList.add("active");
+
+        document.getElementById("headerTitle").innerText = this.innerText;
+        refreshUI();
+    });
+});
+
+// ==========================================
+// 4. ADD, DELETE, ATTENDANCE & REMARKS
+// ==========================================
+document.getElementById("addStudentBtn").addEventListener("click", function () {
+    const id = document.getElementById("newId").value.trim();
+    const name = document.getElementById("newName").value.trim();
+    const score = document.getElementById("newScore").value.trim();
+
+    if (!id || !name || score === "") {
+        alert("Please fill out all fields!");
+        return;
+    }
+
+    if (db.getAll().some(s => s.id === id)) {
         alert("Student ID already exists!");
         return;
     }
 
-    studentList.append(id, name, score);
-    this.reset();
-    renderAll();
+    db.add(id, name, score);
+    document.getElementById("newId").value = "";
+    document.getElementById("newName").value = "";
+    document.getElementById("newScore").value = "";
+    refreshUI();
 });
 
-function deleteStudent(id) {
-    studentList.delete(id);
-    renderAll();
+function removeStudent(id) {
+    db.remove(id);
+    refreshUI();
 }
 
-// ==========================================
-// 2D ARRAY ATTENDANCE & REMARKS UPDATE
-// ==========================================
-function toggleAttendance(id, dayIndex) {
-    let current = studentList.head;
-    while (current) {
-        if (current.id === id) {
-            current.attendance[dayIndex] = current.attendance[dayIndex] === 1 ? 0 : 1;
+function toggleDay(id, dayIdx) {
+    let curr = db.head;
+    while (curr) {
+        if (curr.id === id) {
+            curr.attendance[dayIdx] = curr.attendance[dayIdx] === 1 ? 0 : 1;
             break;
         }
-        current = current.next;
+        curr = curr.next;
     }
-    renderAll();
+    refreshUI();
 }
 
-function updateRemarks(id, value) {
-    let current = studentList.head;
-    while (current) {
-        if (current.id === id) {
-            current.remarks = value;
+function saveRemark(id, text) {
+    let curr = db.head;
+    while (curr) {
+        if (curr.id === id) {
+            curr.remarks = text;
             break;
         }
-        current = current.next;
+        curr = curr.next;
     }
 }
 
 // ==========================================
-// COMPUTATION & SORTING ALGORITHM (Bubble Sort for Ranking)
+// 5. DSA: BUBBLE SORT & LINEAR SEARCH
 // ==========================================
-function getTotalPresent(attendanceArr) {
-    return attendanceArr.reduce((sum, val) => sum + val, 0);
+function countPresent(arr) {
+    return arr.reduce((a, b) => a + b, 0);
 }
 
-function getTotalPoints(student) {
-    return (getTotalPresent(student.attendance) * 10) + student.score;
+function calcPoints(student) {
+    return (countPresent(student.attendance) * 10) + student.score;
 }
 
-function sortStudentsByRank(arr) {
-    let n = arr.length;
-    for (let i = 0; i < n - 1; i++) {
-        for (let j = 0; j < n - i - 1; j++) {
-            if (getTotalPoints(arr[j]) < getTotalPoints(arr[j + 1])) {
+function bubbleSortRank(list) {
+    const arr = [...list];
+    for (let i = 0; i < arr.length - 1; i++) {
+        for (let j = 0; j < arr.length - i - 1; j++) {
+            if (calcPoints(arr[j]) < calcPoints(arr[j + 1])) {
                 let temp = arr[j];
                 arr[j] = arr[j + 1];
                 arr[j + 1] = temp;
@@ -215,103 +201,74 @@ function sortStudentsByRank(arr) {
     return arr;
 }
 
-// ==========================================
-// SEARCHING ALGORITHM (Linear Search)
-// ==========================================
-function searchStudent() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const allStudents = studentList.toArray();
-    
-    const filtered = allStudents.filter(student => 
-        student.name.toLowerCase().includes(query) || 
-        student.id.toLowerCase().includes(query)
+document.getElementById("searchBox").addEventListener("keyup", function () {
+    const q = this.value.toLowerCase();
+    const filtered = db.getAll().filter(s =>
+        s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)
     );
-
     renderTables(filtered);
-}
+});
 
 // ==========================================
-// RENDER ALL UI TABLES
+// 6. RENDER TABLES
 // ==========================================
-function renderAll() {
-    const students = studentList.toArray();
-    renderTables(students);
+function refreshUI() {
+    renderTables(db.getAll());
 }
 
 function renderTables(students) {
-    // 1. Update Dashboard Cards
-    document.getElementById('totalStudents').innerText = students.length;
-    const rankedStudents = sortStudentsByRank([...students]);
-    document.getElementById('topStudent').innerText = rankedStudents.length > 0 ? rankedStudents[0].name : "None";
+    const ranked = bubbleSortRank(students);
 
-    // 2. Render Dashboard Summary Table
-    const dashBody = document.getElementById('dashboardTableBody');
-    dashBody.innerHTML = "";
-    students.forEach(s => {
-        const present = getTotalPresent(s.attendance);
-        const totalPts = getTotalPoints(s);
-        dashBody.innerHTML += `
+    document.getElementById("statTotal").innerText = students.length;
+    document.getElementById("statTop").innerText = ranked.length > 0 ? ranked[0].name : "-";
+
+    // Dashboard Table
+    document.getElementById("tblDashboard").innerHTML = students.map(s => `
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${countPresent(s.attendance)} / 5</td>
+            <td>${s.score}</td>
+            <td><strong>${calcPoints(s)}</strong></td>
+        </tr>
+    `).join("");
+
+    // Attendance Table
+    document.getElementById("tblAttendance").innerHTML = students.map(s => {
+        const days = s.attendance.map((val, idx) =>
+            <td><input type="checkbox" ${val === 1 ? "checked" : ""} onchange="toggleDay('${s.id}', ${idx})"></td>
+        ).join("");
+        return `
             <tr>
                 <td>${s.id}</td>
                 <td>${s.name}</td>
-                <td>${present} / 5</td>
-                <td>${s.score}</td>
-                <td><strong>${totalPts}</strong></td>
+                ${days}
+                <td><input type="text" class="remark-box" value="${s.remarks}" placeholder="Note..." onchange="saveRemark('${s.id}', this.value)"></td>
             </tr>
         `;
-    });
+    }).join("");
 
-    // 3. Render Attendance Sheet Table
-    const attBody = document.getElementById('attendanceTableBody');
-    attBody.innerHTML = "";
-    students.forEach(s => {
-        let checkboxes = "";
-        for (let i = 0; i < 5; i++) {
-            const checked = s.attendance[i] === 1 ? "checked" : "";
-            checkboxes += <td><input type="checkbox" ${checked} onchange="toggleAttendance('${s.id}', ${i})"></td>;
-        }
-        attBody.innerHTML += `
-            <tr>
-                <td>${s.id}</td>
-                <td>${s.name}</td>
-                ${checkboxes}
-                <td><input type="text" class="remark-input" value="${s.remarks}" placeholder="Add excuse..." onchange="updateRemarks('${s.id}', this.value)"></td>
-            </tr>
-        `;
-    });
+    // Students List Table
+    document.getElementById("tblStudents").innerHTML = students.map(s => `
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.score}</td>
+            <td><button class="btn-del" onclick="removeStudent('${s.id}')">Delete</button></td>
+        </tr>
+    `).join("");
 
-    // 4. Render Register/Student List Table
-    const listBody = document.getElementById('studentListBody');
-    listBody.innerHTML = "";
-    students.forEach(s => {
-        listBody.innerHTML += `
-            <tr>
-                <td>${s.id}</td>
-                <td>${s.name}</td>
-                <td>${s.score}</td>
-                <td><button class="btn-delete" onclick="deleteStudent('${s.id}')">Remove</button></td>
-            </tr>
-        `;
-    });
-
-    // 5. Render Rankings Table
-    const rankBody = document.getElementById('rankingTableBody');
-    rankBody.innerHTML = "";
-    rankedStudents.forEach((s, index) => {
-        const present = getTotalPresent(s.attendance);
-        const totalPts = getTotalPoints(s);
-        rankBody.innerHTML += `
-            <tr>
-                <td><strong>#${index + 1}</strong></td>
-                <td>${s.id}</td>
-                <td>${s.name}</td>
-                <td>${present} / 5</td>
-                <td>${s.score}</td>
-                <td><strong>${totalPts}</strong></td>
-            </tr>
-        `;
-    });
+    // Ranking Table
+    document.getElementById("tblRanking").innerHTML = ranked.map((s, idx) => `
+        <tr>
+            <td><strong>#${idx + 1}</strong></td>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${countPresent(s.attendance)} / 5</td>
+            <td>${s.score}</td>
+            <td><strong>${calcPoints(s)}</strong></td>
+        </tr>
+    `).join("");
 }
 
-// Initial Load
-renderAll();
+refreshUI();
