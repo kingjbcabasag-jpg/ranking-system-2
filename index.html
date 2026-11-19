@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance & Ranking System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- LOGIN SCREEN -->
+    <!-- ========================================== -->
+    <div id="loginScreen" class="login-overlay">
+        <div class="login-card">
+            <div class="login-logo">EDU<span>SYSTEM</span></div>
+            <p class="login-subtitle">Teacher & Admin Portal</p>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username (admin)" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password (1234)" required>
+                </div>
+                <p id="loginError" class="error-msg">Invalid username or password!</p>
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+            <div class="login-hint">Default: <b>admin</b> / <b>1234</b></div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MAIN DASHBOARD SYSTEM -->
+    <!-- ========================================== -->
+    <div id="appContainer" class="container hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">EDU<span>SYSTEM</span></div>
+            <ul>
+                <li class="active" onclick="showSection('dashboard', this)">Dashboard</li>
+                <li onclick="showSection('attendance', this)">Attendance</li>
+                <li onclick="showSection('students', this)">Register Student</li>
+                <li onclick="showSection('ranking', this)">Rankings</li>
+            </ul>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h2 id="page-title">Dashboard</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search student name or ID..." onkeyup="searchStudent()">
+                </div>
+            </header>
+
+            <!-- SECTION 1: DASHBOARD -->
+            <section id="dashboard" class="content-section active">
+                <div class="cards">
+                    <div class="card">
+                        <h3>Total Students</h3>
+                        <p id="totalStudents">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Top Ranked Student</h3>
+                        <p id="topStudent">None</p>
+                    </div>
+                </div>
+                <h3>Quick Summary</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Total Present (5 Days)</th>
+                            <th>Exam Score</th>
+                            <th>Total Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardTableBody"></tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 2: ATTENDANCE -->
+            <section id="attendance" class="content-section">
+                <h3>Daily Attendance Sheet (Check for Present)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Day 1</th>
+                            <th>Day 2</th>
+                            <th>Day 3</th>
+                            <th>Day 4</th>
+                            <th>Day 5</th>
+                            <th>Excuse / Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody"></tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 3: REGISTER STUDENT -->
+            <section id="students" class="content-section">
+                <h3>Register New Student</h3>
+                <form id="registerForm" class="form-box">
+                    <input type="text" id="studentId" placeholder="Student ID (e.g., 105)" required>
+                    <input type="text" id="studentName" placeholder="Full Name" required>
+                    <input type="number" id="studentScore" placeholder="Exam Score (0-100)" min="0" max="100" required>
+                    <button type="submit">Add Student</button>
+                </form>
+
+                <h3>Student List (Linked List Nodes)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Exam Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentListBody"></tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 4: RANKING -->
+            <section id="ranking" class="content-section">
+                <h3>Student Performance & Attendance Rankings</h3>
+                <p class="subtitle">Sorted by Total Points (Attendance x 10 + Exam Score)</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Days Present</th>
+                            <th>Exam Score</th>
+                            <th>Total Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingTableBody"></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+Compose
