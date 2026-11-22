@@ -10,6 +10,38 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- CLASSFLOW LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+    <div class="login-card">
+        <div class="login-logo">CF</div>
+
+        <h1>Welcome Back!</h1>
+        <p>Sign in to your ClassFlow account</p>
+
+        <form id="loginForm">
+            <label>Username</label>
+            <input type="text" id="loginUsername"
+                placeholder="Enter username" required>
+
+            <label>Password</label>
+            <div class="password-box">
+                <input type="password" id="loginPassword"
+                    placeholder="Enter password" required>
+                <button type="button" id="togglePassword">Show</button>
+            </div>
+
+            <p id="loginError"></p>
+
+            <button type="submit" class="login-submit">
+                Sign In
+            </button>
+        </form>
+
+        <small>ClassFlow Student Management System</small>
+    </div>
+</div>
+
 <div class="layout">
   <aside class="sidebar" id="sidebar">
     <a class="brand" href="#"><b>C</b><span>class<span>flow</span><small>STUDENT MANAGEMENT</small></span></a>
