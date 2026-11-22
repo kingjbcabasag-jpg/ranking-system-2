@@ -11,34 +11,103 @@
 </head>
 <body>
 
-<!-- CLASSFLOW LOGIN SCREEN -->
-<div id="loginScreen" class="login-screen">
-    <div class="login-card">
-        <div class="login-logo">CF</div>
+<!-- CLASSFLOW MODERN LOGIN -->
+<div id="cfLoginScreen" class="cf-login-screen">
 
-        <h1>Welcome Back!</h1>
-        <p>Sign in to your ClassFlow account</p>
+    <div class="cf-login-orb cf-orb-one"></div>
+    <div class="cf-login-orb cf-orb-two"></div>
 
-        <form id="loginForm">
-            <label>Username</label>
-            <input type="text" id="loginUsername"
-                placeholder="Enter username" required>
+    <div class="cf-login-container">
 
-            <label>Password</label>
-            <div class="password-box">
-                <input type="password" id="loginPassword"
-                    placeholder="Enter password" required>
-                <button type="button" id="togglePassword">Show</button>
+        <div class="cf-login-brand">
+            <div class="cf-brand-logo">CF</div>
+            <h1>CLASSFLOW</h1>
+            <p>STUDENT MANAGEMENT SYSTEM</p>
+
+            <div class="cf-brand-message">
+                <span>MANAGE.</span>
+                <span>LEARN.</span>
+                <span class="cf-purple-text">SUCCEED.</span>
             </div>
 
-            <p id="loginError"></p>
+            <p class="cf-brand-description">
+                Your classroom management experience,
+                simplified and organized in one place.
+            </p>
 
-            <button type="submit" class="login-submit">
-                Sign In
-            </button>
-        </form>
+            <div class="cf-brand-decoration">
+                <div class="cf-decoration-circle">✓</div>
+                <div>
+                    <strong>Welcome to ClassFlow</strong>
+                    <small>Everything starts here.</small>
+                </div>
+            </div>
+        </div>
 
-        <small>ClassFlow Student Management System</small>
+        <div class="cf-login-form-panel">
+
+            <div class="cf-mobile-logo">CF</div>
+
+            <div class="cf-form-heading">
+                <span class="cf-welcome-label">ADMIN PORTAL</span>
+                <h2>Welcome Back!</h2>
+                <p>Please enter your account details to continue.</p>
+            </div>
+
+            <form id="cfLoginForm">
+
+                <div class="cf-field">
+                    <label for="cfUsername">Username</label>
+
+                    <div class="cf-input-wrap">
+                        <span>♙</span>
+                        <input
+                            type="text"
+                            id="cfUsername"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="cf-field">
+                    <label for="cfPassword">Password</label>
+
+                    <div class="cf-input-wrap">
+                        <span>♙</span>
+                        <input
+                            type="password"
+                            id="cfPassword"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="cfTogglePassword"
+                            class="cf-show-password"
+                        >SHOW</button>
+                    </div>
+                </div>
+
+                <p id="cfLoginError" class="cf-login-error"></p>
+
+                <button type="submit" class="cf-login-button">
+                    <span>Sign In to Dashboard</span>
+                    <span>→</span>
+                </button>
+
+            </form>
+
+            <div class="cf-login-footer">
+                <span>✦</span>
+                CLASSFLOW MANAGEMENT SYSTEM
+                <span>✦</span>
+            </div>
+
+        </div>
     </div>
 </div>
 

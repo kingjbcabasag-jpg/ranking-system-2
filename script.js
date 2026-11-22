@@ -452,55 +452,61 @@ render();
 
 })();
 
-// LOGIN SYSTEM
-const loginForm = document.getElementById("loginForm");
-const loginScreen = document.getElementById("loginScreen");
-const loginError = document.getElementById("loginError");
 
-const togglePassword = document.getElementById("togglePassword");
-const passwordInput = document.getElementById("loginPassword");
+    /* ===== CLASSFLOW LOGIN SYSTEM ===== */
 
-// Check existing login session
-if (sessionStorage.getItem("classflowLoggedIn") === "true") {
-    loginScreen.classList.add("hidden");
-}
+(function () {
+    const loginScreen = document.getElementById("loginScreen");
+    const loginForm = document.getElementById("loginForm");
+    const usernameInput = document.getElementById("loginUsername");
+    const passwordInput = document.getElementById("loginPassword");
+    const togglePassword = document.getElementById("togglePassword");
+    const loginError = document.getElementById("loginError");
 
-// Login
-loginForm.addEventListener("submit", function(e) {
-    e.preventDefault();
+    if (!loginScreen || !loginForm) return;
 
-    const username = document.getElementById("loginUsername").value.trim();
-    const password = passwordInput.value;
-
-    if (username === "admin" && password === "1234") {
-        sessionStorage.setItem("classflowLoggedIn", "true");
-
-        loginError.textContent = "";
+    // Check current login session
+    if (sessionStorage.getItem("classflowLoggedIn") === "true") {
         loginScreen.classList.add("hidden");
-
-        if (typeof showToast === "function") {
-            showToast("Welcome back, Admin!");
-        }
-    } else {
-        loginError.textContent = "Incorrect username or password.";
     }
-});
 
-// Show / Hide Password
-togglePassword.addEventListener("click", function() {
-    const isPassword = passwordInput.type === "password";
+    // Login validation
+    loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    passwordInput.type = isPassword ? "text" : "password";
-    togglePassword.textContent = isPassword ? "Hide" : "Show";
-});
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
 
-// Logout
-function logout() {
-    sessionStorage.removeItem("classflowLoggedIn");
+        if (username === "admin" && password === "1234") {
+            sessionStorage.setItem("classflowLoggedIn", "true");
 
-    loginForm.reset();
-    passwordInput.type = "password";
-    togglePassword.textContent = "Show";
+            loginError.textContent = "";
+            loginScreen.classList.add("hidden");
 
-    loginScreen.classList.remove("hidden");
-}
+            if (typeof showToast === "function") {
+                showToast("Welcome back, Admin!");
+            }
+        } else {
+            loginError.textContent = "Incorrect username or password!";
+        }
+    });
+
+    // Show and hide password
+    togglePassword.addEventListener("click", function () {
+        const show = passwordInput.type === "password";
+
+        passwordInput.type = show ? "text" : "password";
+        togglePassword.textContent = show ? "Hide" : "Show";
+    });
+
+    // Logout function
+    window.classFlowLogout = function () {
+        sessionStorage.removeItem("classflowLoggedIn");
+        loginForm.reset();
+
+        passwordInput.type = "password";
+        togglePassword.textContent = "Show";
+
+        loginScreen.classList.remove("hidden");
+    };
+})();
