@@ -1,15 +1,15 @@
 // ==========================================
-// 1. DSA: LINKED LIST + 15-DAY MONTHLY 2D ATTENDANCE + ACTIVITY SCORES
+// 1. DSA: LINKED LIST + 15-DAY 2D ATTENDANCE + SCORES
 // ==========================================
-const DAYS_PER_BATCH = 5;   // 5 days per set
-const TOTAL_MONTH_DAYS = 15; // 15 days total per month (3 sets x 5 days)
-let currentBatch = 0;       // 0 = Days 1-5, 1 = Days 6-10, 2 = Days 11-15
+const DAYS_PER_BATCH = 5;
+const TOTAL_MONTH_DAYS = 15;
+let currentBatch = 0;
 
 class StudentNode {
     constructor(id, name, scores = []) {
         this.id = id;
         this.name = name;
-        this.attendance = Array.from({ length: TOTAL_MONTH_DAYS }, () => 1); // 15 days (1 = Present, 0 = Absent)
+        this.attendance = Array.from({ length: TOTAL_MONTH_DAYS }, () => 1);
         this.scores = [...scores];
         this.next = null;
     }
@@ -66,13 +66,11 @@ class StudentLinkedList {
     }
 }
 
-// Activities Array
 const activities = [
     { title: "Activity 1: Quiz", max: 50 },
     { title: "Activity 2: Lab", max: 50 }
 ];
 
-// Initialize Linked List with requested names
 const roster = new StudentLinkedList();
 roster.add("STU-01", "Lloyd", [46, 48]);
 roster.add("STU-02", "King", [44, 47]);
@@ -81,7 +79,7 @@ roster.add("STU-04", "Jefferson", [41, 43]);
 roster.add("STU-05", "Reymond", [45, 42]);
 roster.add("STU-06", "Aaron", [47, 46]);
 
-function syncActivitySlots() {
+function syncSlots() {
     let curr = roster.head;
     while (curr) {
         while (curr.scores.length < activities.length) {
@@ -93,12 +91,12 @@ function syncActivitySlots() {
         curr = curr.next;
     }
 }
-syncActivitySlots();
+syncSlots();
 
 // ==========================================
-// 2. 3D MOUSE TILT EFFECT
+// 2. 3D MOUSE TILT
 // ==========================================
-function bind3DTiltEffects() {
+function bind3DTilt() {
     document.querySelectorAll(".tilt-card").forEach((card) => {
         card.onmousemove = (e) => {
             const rect = card.getBoundingClientRect();
@@ -115,30 +113,30 @@ function bind3DTiltEffects() {
         };
     });
 }
-bind3DTiltEffects();
+bind3DTilt();
 
 // ==========================================
-// 3. LOGIN & LOGOUT (NO PREFILLED INPUTS)
+// 3. LOGIN & LOGOUT
 // ==========================================
 const loginScreen = document.getElementById("loginScreen");
 const mainApp = document.getElementById("mainApp");
 const loginCard = document.getElementById("loginCard");
 const loginErr = document.getElementById("loginErr");
-const userInputEl = document.getElementById("loginUser");
-const passInputEl = document.getElementById("loginPass");
+const userEl = document.getElementById("loginUser");
+const passEl = document.getElementById("loginPass");
 
 function attemptLogin() {
-    const user = userInputEl.value.trim();
-    const pass = passInputEl.value.trim();
+    const u = userEl.value.trim();
+    const p = passEl.value.trim();
 
-    if (user === "admin" && pass === "1234") {
+    if (u === "admin" && p === "1234") {
         loginErr.style.display = "none";
         loginScreen.classList.add("leaving");
         setTimeout(() => {
             loginScreen.style.display = "none";
-            mainApp.style.display = "flex";
+            mainApp.classList.add("visible");
             renderAll();
-            bind3DTiltEffects();
+            bind3DTilt();
         }, 340);
     } else {
         loginErr.style.display = "block";
@@ -149,15 +147,15 @@ function attemptLogin() {
 }
 
 document.getElementById("loginBtn").addEventListener("click", attemptLogin);
-passInputEl.addEventListener("keydown", (e) => {
+passEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") attemptLogin();
 });
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
-    userInputEl.value = "";
-    passInputEl.value = "";
+    userEl.value = "";
+    passEl.value = "";
     loginErr.style.display = "none";
-    mainApp.style.display = "none";
+    mainApp.classList.remove("visible");
     loginScreen.style.display = "flex";
     setTimeout(() => {
         loginScreen.classList.remove("leaving");
@@ -165,7 +163,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 // ==========================================
-// 4. 3D TAB & BATCH SWITCHING
+// 4. 3D NAVIGATION & BATCH SWITCHING
 // ==========================================
 document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -180,7 +178,7 @@ document.querySelectorAll(".nav-btn").forEach((btn) => {
 
         document.getElementById("activeTitle").textContent = btn.textContent.replace(/^\d+\s*/, "").trim();
         renderAll();
-        bind3DTiltEffects();
+        bind3DTilt();
     });
 });
 
@@ -194,7 +192,7 @@ document.querySelectorAll(".batch-btn").forEach((bBtn) => {
 });
 
 // ==========================================
-// 5. ADD STUDENT, ADD ACTIVITY, SCORES & ATTENDANCE
+// 5. CRUD, ATTENDANCE & SCORES
 // ==========================================
 document.getElementById("addStuBtn").addEventListener("click", () => {
     const id = document.getElementById("stuId").value.trim();
@@ -209,8 +207,7 @@ document.getElementById("addStuBtn").addEventListener("click", () => {
         return;
     }
 
-    const zeroScores = activities.map(() => 0);
-    roster.add(id, name, zeroScores);
+    roster.add(id, name, activities.map(() => 0));
     document.getElementById("stuId").value = "";
     document.getElementById("stuName").value = "";
     renderAll();
@@ -226,7 +223,7 @@ document.getElementById("addActBtn").addEventListener("click", () => {
     }
 
     activities.push({ title, max });
-    syncActivitySlots();
+    syncSlots();
     document.getElementById("actTitle").value = "";
     document.getElementById("actMax").value = "50";
     renderAll();
@@ -238,25 +235,25 @@ function deleteStudent(id) {
 }
 
 function toggleDay(id, dayIdx) {
-    const student = roster.findById(id);
-    if (!student) return;
-    student.attendance[dayIdx] = student.attendance[dayIdx] === 1 ? 0 : 1;
+    const s = roster.findById(id);
+    if (!s) return;
+    s.attendance[dayIdx] = s.attendance[dayIdx] === 1 ? 0 : 1;
     renderAll();
 }
 
 function updateScore(id, actIdx, rawValue) {
-    const student = roster.findById(id);
-    if (!student) return;
+    const s = roster.findById(id);
+    if (!s) return;
     const maxScore = activities[actIdx] ? activities[actIdx].max : 100;
     let val = Number(rawValue);
     if (Number.isNaN(val) || val < 0) val = 0;
     if (val > maxScore) val = maxScore;
-    student.scores[actIdx] = val;
+    s.scores[actIdx] = val;
     renderAll();
 }
 
 // ==========================================
-// 6. COMPUTATION, BUBBLE SORT & LINEAR SEARCH
+// 6. COMPUTATION, SORTING & SEARCH
 // ==========================================
 function getPresentCount(student) {
     return student.attendance.slice(0, TOTAL_MONTH_DAYS).reduce((acc, v) => acc + v, 0);
@@ -284,29 +281,25 @@ function sortByPointsDesc(list) {
     return arr;
 }
 
-document.getElementById("searchInput").addEventListener("input", () => {
-    renderAll();
-});
+document.getElementById("searchInput").addEventListener("input", renderAll);
 
 // ==========================================
-// 7. RENDER UI
+// 7. RENDER TABLES
 // ==========================================
 function renderAll() {
     const query = document.getElementById("searchInput").value.trim().toLowerCase();
     const allStudents = roster.toArray();
     const rankedAll = sortByPointsDesc(allStudents);
 
-    // KPIs
     document.getElementById("kpiTotal").textContent = allStudents.length;
     document.getElementById("kpiTop").textContent = rankedAll.length > 0 ? rankedAll[0].name : "—";
     document.getElementById("kpiMeta").textContent = `5d/set • 15d/mo (${activities.length} Act)`;
 
-    // Linear Search filter
     const filtered = allStudents.filter((s) =>
         s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query)
     );
 
-    // 1. Overview Table
+    // Overview
     document.getElementById("overviewBody").innerHTML = filtered.map((s) => `
         <tr>
             <td><strong>${s.id}</strong></td>
@@ -317,7 +310,7 @@ function renderAll() {
         </tr>
     `).join("");
 
-    // 2. Activity Scores Matrix
+    // Scores
     const actHeaders = activities.map((a) => `<th>${a.title} (/${a.max})</th>`).join("");
     document.getElementById("scoresHead").innerHTML = `
         <tr>
@@ -354,7 +347,7 @@ function renderAll() {
         `;
     }).join("");
 
-    // 3. 5-Day Batch Attendance Table (out of 15 days per month)
+    // 5-day batch attendance out of 15 monthly days
     const startDay = currentBatch * DAYS_PER_BATCH;
     const dayIndices = Array.from({ length: DAYS_PER_BATCH }, (_, i) => startDay + i);
 
@@ -393,7 +386,7 @@ function renderAll() {
         `;
     }).join("");
 
-    // 4. Rankings Table
+    // Rankings
     const rankedFiltered = sortByPointsDesc(filtered);
     document.getElementById("rankBody").innerHTML = rankedFiltered.map((s, idx) => {
         const rankClass = idx === 0 ? "rank-1" : idx === 1 ? "rank-2" : idx === 2 ? "rank-3" : "";

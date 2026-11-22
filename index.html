@@ -3,49 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX RANK // Student Attendance & Ranking System</title>
+    <title>Student Ranking System // 3D Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Ambient Glow Orbs -->
+    <div class="grid-3d-bg"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
 
-    <!-- ========================================== -->
-    <!-- LOGIN SCREEN -->
-    <!-- ========================================== -->
+    <!-- LOGIN OVERLAY (BLANK INPUTS ON LOAD) -->
     <div id="loginScreen" class="auth-overlay">
-        <div class="auth-card" id="loginCard">
-            <div class="badge">DSA v3.0 • LIVE SYSTEM</div>
-            <h1 class="logo">APEX<span>RANK</span></h1>
-            <p class="auth-sub">Attendance, Activities & Ranking Command</p>
+        <div class="auth-card tilt-card" id="loginCard">
+            <div class="badge">3D DSA EDITION • 15-DAY MONTHLY</div>
+            <h1 class="logo">STUDENT <span>RANKING SYSTEM</span></h1>
+            <p class="auth-sub">Enter credentials to access the dashboard</p>
 
             <div class="input-field">
-                <label>Username</label>
-                <input type="text" id="loginUser" value="admin" placeholder="admin">
+                <label for="loginUser">Username</label>
+                <input type="text" id="loginUser" placeholder="Type username" autocomplete="off">
             </div>
 
             <div class="input-field">
-                <label>Password</label>
-                <input type="password" id="loginPass" value="1234" placeholder="1234">
+                <label for="loginPass">Password</label>
+                <input type="password" id="loginPass" placeholder="Type password" autocomplete="off">
             </div>
 
-            <p id="loginErr" class="auth-err">Invalid credentials! Try admin / 1234</p>
-            <button type="button" id="loginBtn" class="btn-glow">Enter Command Center →</button>
-            <span class="auth-hint">Default Access: <strong>admin</strong> / <strong>1234</strong></span>
+            <p id="loginErr" class="auth-err">Invalid username or password! Use admin / 1234</p>
+            <button type="button" id="loginBtn" class="btn-3d">Login →</button>
+            <span class="auth-hint">Default Credentials: <strong>admin</strong> / <strong>1234</strong></span>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MAIN DASHBOARD -->
-    <!-- ========================================== -->
-    <div id="mainApp" class="app-shell" style="display: none;">
-        <!-- Sidebar -->
+    <!-- MAIN 3D DASHBOARD -->
+    <div id="mainApp" class="app-shell">
         <aside class="sidebar">
             <div class="brand-box">
-                <div class="logo sm">APEX<span>RANK</span></div>
-                <span class="status-pill"><i class="pulse"></i> Online</span>
+                <div class="logo sm">STUDENT <span>RANKING SYSTEM</span></div>
+                <span class="status-pill"><i class="pulse"></i> 3D Live</span>
             </div>
 
             <nav class="menu">
@@ -56,57 +51,56 @@
                     <span>02</span> Students & Activities
                 </button>
                 <button type="button" class="nav-btn" data-tab="tab-attendance">
-                    <span>03</span> 5-Day Attendance
+                    <span>03</span> Attendance (5d / 15d)
                 </button>
                 <button type="button" class="nav-btn" data-tab="tab-ranking">
-                    <span>04</span> Live Rankings
+                    <span>04</span> 3D Rankings
                 </button>
             </nav>
 
-            <button type="button" id="logoutBtn" class="btn-logout">⏻ Logout</button>
+            <button type="button" id="logoutBtn" class="btn-logout-3d">⏻ Logout</button>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="workspace">
-            <header class="topbar">
+            <header class="topbar tilt-card">
                 <div>
-                    <p class="crumb">STUDENT ATTENDANCE & RANKING SYSTEM</p>
+                    <p class="crumb">STUDENT RANKING SYSTEM • 15 DAYS / MONTH</p>
                     <h2 id="activeTitle">Overview</h2>
                 </div>
                 <div class="search-wrap">
-                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Linear search student / ID...">
+                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search student name or ID...">
                 </div>
             </header>
 
             <!-- TAB 1: OVERVIEW -->
             <section id="tab-overview" class="view-panel active">
                 <div class="kpi-grid">
-                    <div class="kpi-card">
+                    <div class="kpi-card tilt-card">
                         <span class="kpi-label">Total Students (Linked List)</span>
                         <h3 id="kpiTotal">0</h3>
                     </div>
-                    <div class="kpi-card accent-green">
-                        <span class="kpi-label">Rank #1 Leader</span>
+                    <div class="kpi-card accent-green tilt-card">
+                        <span class="kpi-label">Top #1 Student</span>
                         <h3 id="kpiTop">—</h3>
                     </div>
-                    <div class="kpi-card accent-purple">
-                        <span class="kpi-label">Total Activities</span>
-                        <h3 id="kpiActivities">0</h3>
+                    <div class="kpi-card accent-purple tilt-card">
+                        <span class="kpi-label">Attendance & Activities</span>
+                        <h3 id="kpiMeta">5d/set • 15d/mo</h3>
                     </div>
                 </div>
 
-                <div class="glass-card">
+                <div class="glass-card tilt-card">
                     <div class="card-head">
-                        <h3>Performance & Attendance Snapshot</h3>
-                        <span class="tag">Points = (Present × 10) + Total Activity Scores</span>
+                        <h3>Student Snapshot (15 Days per Month)</h3>
+                        <span class="tag">Points = (Present Days × 10) + Activity Scores</span>
                     </div>
                     <div class="table-scroll">
                         <table>
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Student</th>
-                                    <th>Present (5d)</th>
+                                    <th>Student Name</th>
+                                    <th>Attendance (15d)</th>
                                     <th>Activity Scores</th>
                                     <th>Total Points</th>
                                 </tr>
@@ -120,33 +114,30 @@
             <!-- TAB 2: ADD STUDENTS, ADD ACTIVITY & SCORES -->
             <section id="tab-students" class="view-panel">
                 <div class="two-col">
-                    <!-- Add Student -->
-                    <div class="glass-card">
-                        <h3>+ Add Student Node</h3>
-                        <p class="muted">Inserts a new student dynamically into the Linked List.</p>
+                    <div class="glass-card tilt-card">
+                        <h3>+ Add Student</h3>
+                        <p class="muted">Inserts a new student node into the Linked List.</p>
                         <div class="stack-form">
-                            <input type="text" id="stuId" placeholder="Student ID (e.g. STU-05)">
-                            <input type="text" id="stuName" placeholder="Full Name">
-                            <button type="button" id="addStuBtn" class="btn-glow">Add Student</button>
+                            <input type="text" id="stuId" placeholder="Student ID (e.g. STU-07)">
+                            <input type="text" id="stuName" placeholder="Student Name">
+                            <button type="button" id="addStuBtn" class="btn-3d">Add Student</button>
                         </div>
                     </div>
 
-                    <!-- Add Activity -->
-                    <div class="glass-card">
-                        <h3>+ Create New Activity</h3>
-                        <p class="muted">Adds an activity column & score slot for every student.</p>
+                    <div class="glass-card tilt-card">
+                        <h3>+ Add Activity</h3>
+                        <p class="muted">Creates a new activity column and score slot for all students.</p>
                         <div class="stack-form">
                             <input type="text" id="actTitle" placeholder="Activity Name (e.g. Quiz 1, Lab 2)">
-                            <input type="number" id="actMax" placeholder="Max Score (e.g. 50)" min="1" max="500" value="50">
-                            <button type="button" id="addActBtn" class="btn-glow alt">Add Activity</button>
+                            <input type="number" id="actMax" placeholder="Max Score" min="1" max="500" value="50">
+                            <button type="button" id="addActBtn" class="btn-3d alt">Add Activity</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Activity Scores Matrix -->
-                <div class="glass-card mt-20">
+                <div class="glass-card tilt-card mt-20">
                     <div class="card-head">
-                        <h3>Student Roster & Activity Scores</h3>
+                        <h3>Students & Activity Scores</h3>
                         <span class="tag">Edit scores directly • Auto-updates Total Points & Rank</span>
                     </div>
                     <div class="table-scroll">
@@ -158,39 +149,35 @@
                 </div>
             </section>
 
-            <!-- TAB 3: 5-DAY ATTENDANCE (2D ARRAY) -->
+            <!-- TAB 3: 5-DAY BATCHES OF 15-DAY MONTHLY ATTENDANCE -->
             <section id="tab-attendance" class="view-panel">
-                <div class="glass-card">
+                <div class="glass-card tilt-card">
                     <div class="card-head">
-                        <h3>5-Day Attendance Matrix (2D Array)</h3>
-                        <span class="tag">Click day pills to toggle Present / Absent</span>
+                        <div>
+                            <h3>Monthly Attendance (5 Days per Set • 15 Days Total)</h3>
+                            <p class="muted">Switch between the 3 five-day sets to update all 15 monthly days.</p>
+                        </div>
+                        <div class="batch-controls">
+                            <button type="button" class="batch-btn active" data-batch="0">Days 1–5 (5d)</button>
+                            <button type="button" class="batch-btn" data-batch="1">Days 6–10 (5d)</button>
+                            <button type="button" class="batch-btn" data-batch="2">Days 11–15 (5d)</button>
+                        </div>
                     </div>
                     <div class="table-scroll">
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Student</th>
-                                    <th>Day 1</th>
-                                    <th>Day 2</th>
-                                    <th>Day 3</th>
-                                    <th>Day 4</th>
-                                    <th>Day 5</th>
-                                    <th>Days Present</th>
-                                </tr>
-                            </thead>
+                            <thead id="attHead"></thead>
                             <tbody id="attBody"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 4: RANKINGS (SORTING) -->
+            <!-- TAB 4: 3D RANKINGS -->
             <section id="tab-ranking" class="view-panel">
-                <div class="glass-card">
+                <div class="glass-card tilt-card">
                     <div class="card-head">
-                        <h3>Sorted Leaderboard</h3>
-                        <span class="tag">Descending Sort by Total Points</span>
+                        <h3>3D Student Rankings</h3>
+                        <span class="tag">Sorted Highest to Lowest Total Points</span>
                     </div>
                     <div class="table-scroll">
                         <table>
@@ -198,9 +185,9 @@
                                 <tr>
                                     <th>Rank</th>
                                     <th>ID</th>
-                                    <th>Student</th>
-                                    <th>Present</th>
-                                    <th>Scores Total</th>
+                                    <th>Student Name</th>
+                                    <th>Present (15d)</th>
+                                    <th>Total Scores</th>
                                     <th>Total Points</th>
                                 </tr>
                             </thead>
