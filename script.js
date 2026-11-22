@@ -1,13 +1,15 @@
 // ==========================================
-// 1. DSA: LINKED LIST + DYNAMIC 2D ATTENDANCE + ACTIVITY SCORES
+// 1. DSA: LINKED LIST + 15-DAY MONTHLY 2D ATTENDANCE + ACTIVITY SCORES
 // ==========================================
-let attendanceDaysCount = 5; // Napapalitan ng user (1 to 30 days)
+const DAYS_PER_BATCH = 5;   // 5 days per set
+const TOTAL_MONTH_DAYS = 15; // 15 days total per month (3 sets x 5 days)
+let currentBatch = 0;       // 0 = Days 1-5, 1 = Days 6-10, 2 = Days 11-15
 
 class StudentNode {
-    constructor(id, name, scores = [], days = attendanceDaysCount) {
+    constructor(id, name, scores = []) {
         this.id = id;
         this.name = name;
-        this.attendance = Array.from({ length: days }, () => 1); // 1 = Present, 0 = Absent
+        this.attendance = Array.from({ length: TOTAL_MONTH_DAYS }, () => 1); // 15 days (1 = Present, 0 = Absent)
         this.scores = [...scores];
         this.next = null;
     }
@@ -19,7 +21,7 @@ class StudentLinkedList {
     }
 
     add(id, name, scores = []) {
-        const node = new StudentNode(id, name, scores, attendanceDaysCount);
+        const node = new StudentNode(id, name, scores);
         if (!this.head) {
             this.head = node;
             return;
@@ -79,58 +81,55 @@ roster.add("STU-04", "Jefferson", [41, 43]);
 roster.add("STU-05", "Reymond", [45, 42]);
 roster.add("STU-06", "Aaron", [47, 46]);
 
-function syncStudentDataSlots() {
+function syncActivitySlots() {
     let curr = roster.head;
     while (curr) {
         while (curr.scores.length < activities.length) {
             curr.scores.push(0);
         }
-        if (curr.attendance.length < attendanceDaysCount) {
-            while (curr.attendance.length < attendanceDaysCount) {
-                curr.attendance.push(1);
-            }
-        } else if (curr.attendance.length > attendanceDaysCount) {
-            curr.attendance = curr.attendance.slice(0, attendanceDaysCount);
+        if (curr.attendance.length !== TOTAL_MONTH_DAYS) {
+            curr.attendance = Array.from({ length: TOTAL_MONTH_DAYS }, (_, idx) => curr.attendance[idx] ?? 1);
         }
         curr = curr.next;
     }
 }
-syncStudentDataSlots();
+syncActivitySlots();
 
 // ==========================================
-// 2. 3D MOUSE TILT EFFECT ON CARDS
+// 2. 3D MOUSE TILT EFFECT
 // ==========================================
 function bind3DTiltEffects() {
     document.querySelectorAll(".tilt-card").forEach((card) => {
-        card.addEventListener("mousemove", (e) => {
+        card.onmousemove = (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const midX = rect.width / 2;
             const midY = rect.height / 2;
-            const rotateY = ((x - midX) / midX) * 6;
-            const rotateX = -((y - midY) / midY) * 6;
-            card.style.transform = `perspective(1100px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(10px)`;
-        });
-
-        card.addEventListener("mouseleave", () => {
+            const rotateY = ((x - midX) / midX) * 5;
+            const rotateX = -((y - midY) / midY) * 5;
+            card.style.transform = `perspective(1100px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(8px)`;
+        };
+        card.onmouseleave = () => {
             card.style.transform = "perspective(1100px) rotateX(0deg) rotateY(0deg) translateZ(0px)";
-        });
+        };
     });
 }
 bind3DTiltEffects();
 
 // ==========================================
-// 3. LOGIN & LOGOUT WITH 3D TRANSITION
+// 3. LOGIN & LOGOUT (NO PREFILLED INPUTS)
 // ==========================================
 const loginScreen = document.getElementById("loginScreen");
 const mainApp = document.getElementById("mainApp");
 const loginCard = document.getElementById("loginCard");
 const loginErr = document.getElementById("loginErr");
+const userInputEl = document.getElementById("loginUser");
+const passInputEl = document.getElementById("loginPass");
 
 function attemptLogin() {
-    const user = document.getElementById("loginUser").value.trim();
-    const pass = document.getElementById("loginPass").value.trim();
+    const user = userInputEl.value.trim();
+    const pass = passInputEl.value.trim();
 
     if (user === "admin" && pass === "1234") {
         loginErr.style.display = "none";
@@ -140,7 +139,7 @@ function attemptLogin() {
             mainApp.style.display = "flex";
             renderAll();
             bind3DTiltEffects();
-        }, 380);
+        }, 340);
     } else {
         loginErr.style.display = "block";
         loginCard.classList.remove("shake");
@@ -150,11 +149,14 @@ function attemptLogin() {
 }
 
 document.getElementById("loginBtn").addEventListener("click", attemptLogin);
-document.getElementById("loginPass").addEventListener("keydown", (e) => {
+passInputEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") attemptLogin();
 });
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
+    userInputEl.value = "";
+    passInputEl.value = "";
+    loginErr.style.display = "none";
     mainApp.style.display = "none";
     loginScreen.style.display = "flex";
     setTimeout(() => {
@@ -163,7 +165,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 // ==========================================
-// 4. 3D TAB TRANSITIONS
+// 4. 3D TAB & BATCH SWITCHING
 // ==========================================
 document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -173,7 +175,6 @@ document.querySelectorAll(".nav-btn").forEach((btn) => {
         const targetId = btn.getAttribute("data-tab");
         document.querySelectorAll(".view-panel").forEach((panel) => panel.classList.remove("active"));
         const activePanel = document.getElementById(targetId);
-        activePanel.classList.remove("active");
         void activePanel.offsetWidth;
         activePanel.classList.add("active");
 
@@ -183,26 +184,24 @@ document.querySelectorAll(".nav-btn").forEach((btn) => {
     });
 });
 
-// ==========================================
-// 5. CUSTOM DAYS, ADD STUDENT, ADD ACTIVITY, SCORES & ATTENDANCE
-// ==========================================
-document.getElementById("applyDaysBtn").addEventListener("click", () => {
-    const inputEl = document.getElementById("daysCountInput");
-    let newDays = Number(inputEl.value);
-    if (Number.isNaN(newDays) || newDays < 1) newDays = 1;
-    if (newDays > 30) newDays = 30;
-    inputEl.value = newDays;
-    attendanceDaysCount = newDays;
-    syncStudentDataSlots();
-    renderAll();
+document.querySelectorAll(".batch-btn").forEach((bBtn) => {
+    bBtn.addEventListener("click", () => {
+        document.querySelectorAll(".batch-btn").forEach((b) => b.classList.remove("active"));
+        bBtn.classList.add("active");
+        currentBatch = Number(bBtn.getAttribute("data-batch"));
+        renderAll();
+    });
 });
 
+// ==========================================
+// 5. ADD STUDENT, ADD ACTIVITY, SCORES & ATTENDANCE
+// ==========================================
 document.getElementById("addStuBtn").addEventListener("click", () => {
     const id = document.getElementById("stuId").value.trim();
     const name = document.getElementById("stuName").value.trim();
 
     if (!id || !name) {
-        alert("Ilagay ang Student ID at Full Name.");
+        alert("Ilagay ang Student ID at Student Name.");
         return;
     }
     if (roster.findById(id)) {
@@ -227,7 +226,7 @@ document.getElementById("addActBtn").addEventListener("click", () => {
     }
 
     activities.push({ title, max });
-    syncStudentDataSlots();
+    syncActivitySlots();
     document.getElementById("actTitle").value = "";
     document.getElementById("actMax").value = "50";
     renderAll();
@@ -260,7 +259,7 @@ function updateScore(id, actIdx, rawValue) {
 // 6. COMPUTATION, BUBBLE SORT & LINEAR SEARCH
 // ==========================================
 function getPresentCount(student) {
-    return student.attendance.slice(0, attendanceDaysCount).reduce((acc, v) => acc + v, 0);
+    return student.attendance.slice(0, TOTAL_MONTH_DAYS).reduce((acc, v) => acc + v, 0);
 }
 
 function getScoreSum(student) {
@@ -300,8 +299,7 @@ function renderAll() {
     // KPIs
     document.getElementById("kpiTotal").textContent = allStudents.length;
     document.getElementById("kpiTop").textContent = rankedAll.length > 0 ? rankedAll[0].name : "—";
-    document.getElementById("kpiMeta").textContent = `${attendanceDaysCount}d • ${activities.length} Act`;
-    document.getElementById("ovAttHeader").textContent = `Present (${attendanceDaysCount}d)`;
+    document.getElementById("kpiMeta").textContent = `5d/set • 15d/mo (${activities.length} Act)`;
 
     // Linear Search filter
     const filtered = allStudents.filter((s) =>
@@ -312,8 +310,8 @@ function renderAll() {
     document.getElementById("overviewBody").innerHTML = filtered.map((s) => `
         <tr>
             <td><strong>${s.id}</strong></td>
-            <td>${s.name}</td>
-            <td>${getPresentCount(s)} / ${attendanceDaysCount}</td>
+            <td><strong>${s.name}</strong></td>
+            <td>${getPresentCount(s)} / ${TOTAL_MONTH_DAYS} days</td>
             <td>${getScoreSum(s)}</td>
             <td><strong style="color:#22d3ee">${getTotalPoints(s)} pts</strong></td>
         </tr>
@@ -324,7 +322,7 @@ function renderAll() {
     document.getElementById("scoresHead").innerHTML = `
         <tr>
             <th>ID</th>
-            <th>Student</th>
+            <th>Student Name</th>
             ${actHeaders}
             <th>Total Score</th>
             <th>Action</th>
@@ -348,7 +346,7 @@ function renderAll() {
         return `
             <tr>
                 <td><strong>${s.id}</strong></td>
-                <td>${s.name}</td>
+                <td><strong>${s.name}</strong></td>
                 ${scoreCells}
                 <td><strong>${getScoreSum(s)}</strong></td>
                 <td><button type="button" class="btn-del" onclick="deleteStudent('${s.id}')">Remove</button></td>
@@ -356,19 +354,21 @@ function renderAll() {
         `;
     }).join("");
 
-    // 3. Dynamic Attendance Table
-    const dayCols = Array.from({ length: attendanceDaysCount }, (_, i) => `<th>Day ${i + 1}</th>`).join("");
+    // 3. 5-Day Batch Attendance Table (out of 15 days per month)
+    const startDay = currentBatch * DAYS_PER_BATCH;
+    const dayIndices = Array.from({ length: DAYS_PER_BATCH }, (_, i) => startDay + i);
+
     document.getElementById("attHead").innerHTML = `
         <tr>
             <th>ID</th>
-            <th>Student</th>
-            ${dayCols}
-            <th>Days Present</th>
+            <th>Student Name</th>
+            ${dayIndices.map((dIdx) => `<th>Day ${dIdx + 1}</th>`).join("")}
+            <th>Monthly Total (15d)</th>
         </tr>
     `;
 
     document.getElementById("attBody").innerHTML = filtered.map((s) => {
-        const pills = Array.from({ length: attendanceDaysCount }, (_, dIdx) => {
+        const pills = dayIndices.map((dIdx) => {
             const isPresent = s.attendance[dIdx] === 1;
             return `
                 <td>
@@ -386,9 +386,9 @@ function renderAll() {
         return `
             <tr>
                 <td><strong>${s.id}</strong></td>
-                <td>${s.name}</td>
+                <td><strong>${s.name}</strong></td>
                 ${pills}
-                <td><strong>${getPresentCount(s)} / ${attendanceDaysCount}</strong></td>
+                <td><strong>${getPresentCount(s)} / ${TOTAL_MONTH_DAYS}</strong></td>
             </tr>
         `;
     }).join("");
@@ -401,8 +401,8 @@ function renderAll() {
             <tr>
                 <td><span class="rank-badge ${rankClass}">#${idx + 1}</span></td>
                 <td><strong>${s.id}</strong></td>
-                <td>${s.name}</td>
-                <td>${getPresentCount(s)} / ${attendanceDaysCount}</td>
+                <td><strong>${s.name}</strong></td>
+                <td>${getPresentCount(s)} / ${TOTAL_MONTH_DAYS}</td>
                 <td>${getScoreSum(s)}</td>
                 <td><strong style="color:#34d399">${getTotalPoints(s)} pts</strong></td>
             </tr>
