@@ -229,8 +229,7 @@ button,input,select,textarea{font-family:inherit}
 button:focus-visible,.nav:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(132,106,239,.35);outline-offset:2px}
 @media(max-width:760px){.cf-login-screen{padding:16px}.cf-login-container{grid-template-columns:1fr;max-width:440px;min-height:0;border-radius:23px}.cf-login-brand{display:none}.cf-login-form-panel{padding:36px 27px 28px}.cf-mobile-logo{display:grid;margin:0 auto 24px}.cf-form-heading{text-align:center}.cf-form-heading h2{font-size:26px}.cf-form-heading p{margin-bottom:26px}.cf-login-footer{margin-top:27px}}
 @media(prefers-reduced-motion:reduce){.cf-login-screen::before,.cf-login-screen::after,.cf-login-container,.cf-shake{animation:none!important}}
-/* FIX: HIDE LOGIN AFTER SUCCESSFUL LOGIN */
+/* FIXED LOGIN VISIBILITY */
 .cf-login-hidden {
-  display: none !important;
+    display: none !important;
 }
-

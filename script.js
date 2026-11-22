@@ -1,4 +1,4 @@
-(()=>{
+ (()=>{
 'use strict';
 
 const $=s=>document.querySelector(s);
@@ -6,6 +6,34 @@ const $$=s=>[...document.querySelectorAll(s)];
 const key='classflow_modern_v2';
 const today=new Date().toISOString().slice(0,10);
 
+// SAFE STORAGE: supports browsers that restrict localStorage
+function getStored(k){
+ try{
+  const v=localStorage.getItem(k);
+  if(v!==null)return v;
+ }catch(e){}
+ try{return sessionStorage.getItem(k)}catch(e){}
+ return null;
+}
+
+function setStored(k,v){
+ try{
+  localStorage.setItem(k,v);
+  return true;
+ }catch(e){}
+ try{
+  sessionStorage.setItem(k,v);
+  return true;
+ }catch(e){}
+ return false;
+}
+
+function removeStored(k){
+ try{localStorage.removeItem(k)}catch(e){}
+ try{sessionStorage.removeItem(k)}catch(e){}
+}
+
+// DEFAULT STUDENTS
 const seed=['Lloyd','Jeston','Jefferson','King','Reymond','Aaron']
 .map((name,i)=>({
  id:'s'+(i+1),
@@ -15,26 +43,41 @@ const seed=['Lloyd','Jeston','Jefferson','King','Reymond','Aaron']
  status:'Active'
 }));
 
+// LOAD DATA
 let data=(()=>{
  try{
-  const x=JSON.parse(localStorage.getItem(key));
-  if(x&&Array.isArray(x.students))return x;
+  const x=JSON.parse(getStored(key));
+  if(x&&Array.isArray(x.students)){
+   x.activities=Array.isArray(x.activities)?x.activities:[];
+   x.grades=Array.isArray(x.grades)?x.grades:[];
+   x.attendance=x.attendance||{};
+   return x;
+  }
  }catch(e){}
- return {students:seed,activities:[],grades:[],attendance:{}};
+ return {
+  students:seed,
+  activities:[],
+  grades:[],
+  attendance:{}
+ };
 })();
 
 let toastTimer;
 
-const save=()=>localStorage.setItem(key,JSON.stringify(data));
+const save=()=>setStored(key,JSON.stringify(data));
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({
- '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ '&':'&amp;',
+ '<':'&lt;',
+ '>':'&gt;',
+ '"':'&quot;',
+ "'":'&#39;'
 }[c]));
 
 const student=id=>data.students.find(s=>s.id===id);
 
-const initials=n=>n.trim().split(/\s+/).slice(0,2)
-.map(x=>x[0]||'').join('').toUpperCase();
+const initials=n=>String(n||'').trim().split(/\s+/)
+.slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
 
 const colors=[
  ['#eeeaff','#6e57d8'],
@@ -45,12 +88,13 @@ const colors=[
 ];
 
 function avatar(n){
- let i=[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%colors.length;
+ let i=[...String(n||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%colors.length;
  return <span class="avatar" style="background:${colors[i][0]};color:${colors[i][1]}">${esc(initials(n))}</span>;
 }
 
 function toast(m){
  let t=$('#toast');
+ if(!t)return;
  t.textContent=m;
  t.classList.add('show');
  clearTimeout(toastTimer);
@@ -64,8 +108,10 @@ function modal(open){
 function page(name){
  $$('.page').forEach(p=>p.classList.toggle('active',p.id===name));
  $$('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===name));
+
  $('#pageTitle').textContent=name[0].toUpperCase()+name.slice(1);
  $('#sidebar').classList.remove('open');
+
  window.scrollTo({top:0,behavior:'smooth'});
 
  if(name==='attendance')renderAttendance();
@@ -85,6 +131,7 @@ function studentRow(s,actions=false){
  </tr>`;
 }
 
+// STUDENTS
 function renderStudents(){
  let q=($('#studentSearch').value||'').toLowerCase();
 
@@ -111,6 +158,7 @@ function renderStudents(){
  sel.disabled=!data.students.length;
 }
 
+// ACTIVITIES
 function renderActivities(){
  let a=[...data.activities].sort((x,y)=>y.created-x.created);
 
@@ -134,13 +182,15 @@ function renderActivities(){
  </div>`).join('')||'<div class="empty">No activities yet. Create your first one.</div>';
 }
 
+// GRADES
 function renderGrades(){
  let a=[...data.grades].sort((x,y)=>y.created-x.created);
 
  $('#gradeCount').textContent=a.length+' records';
 
  $('#gradesTable').innerHTML=a.map(g=>{
-  let pct=g.score/g.total*100;
+  let pct=g.total?g.score/g.total*100:0;
+
   return `<tr>
    <td>${esc(student(g.sid)?.name||'Deleted student')}</td>
    <td>${esc(g.assessment)}<br><small>${esc(g.subject)} · ${esc(g.period)}</small></td>
@@ -153,6 +203,7 @@ function renderGrades(){
  $('#gradesEmpty').classList.toggle('hide',a.length>0);
 }
 
+// ATTENDANCE
 function day(){
  let d=$('#attendanceDate').value||today;
  return data.attendance[d]||(data.attendance[d]={});
@@ -181,15 +232,19 @@ function renderAttendance(){
 
  $('#attendanceEmpty').classList.toggle('hide',data.students.length>0);
  $('#attendanceSummary').textContent=`${p} present · ${l} late · ${ab} absent`;
+
  $('#sAttendance').textContent=
  (data.students.length?Math.round((p+l*.5)/data.students.length*100):0)+'%';
 }
 
+// RANKINGS
 function renderRanks(){
  let a=data.students.map(s=>{
   let g=data.grades.filter(x=>x.sid===s.id);
+
   let avg=g.length?
    g.reduce((n,x)=>n+x.score/x.total*100,0)/g.length:null;
+
   return {s,avg,count:g.length};
  }).filter(x=>x.avg!==null).sort((x,y)=>y.avg-x.avg);
 
@@ -205,6 +260,7 @@ function renderRanks(){
  </div>`).join(''):'Add grade records to see rankings.';
 }
 
+// REFRESH DASHBOARD
 function render(){
  $('#sStudents').textContent=data.students.length;
  $('#sActivities').textContent=data.activities.length;
@@ -227,12 +283,14 @@ $('#studentForm').addEventListener('submit',e=>{
 
  if(id){
   let s=student(id);
+
   if(s)Object.assign(s,{
    name,
    code:f.get('code'),
    email:f.get('email'),
    status:f.get('status')
   });
+
   toast('Student updated.');
  }else{
   data.students.push({
@@ -243,6 +301,7 @@ $('#studentForm').addEventListener('submit',e=>{
    email:f.get('email'),
    status:f.get('status')
   });
+
   toast('Student added.');
  }
 
@@ -289,6 +348,7 @@ $('#gradeForm').addEventListener('submit',e=>{
  let total=Number(f.get('total'));
 
  if(!f.get('studentId'))return toast('Add a student first.');
+
  if(total<=0||score<0||score>total)
   return toast('Check the score and total points.');
 
@@ -331,8 +391,9 @@ document.addEventListener('click',e=>{
  b=e.target.closest('[data-edit]');
  if(b){
   let s=student(b.dataset.edit);
-  let f=$('#studentForm');
+  if(!s)return;
 
+  let f=$('#studentForm');
   f.elements.id.value=s.id;
   f.elements.name.value=s.name;
   f.elements.code.value=s.code||'';
@@ -389,7 +450,7 @@ $('#globalSearch').addEventListener('input',e=>{
  renderStudents();
 });
 
-// ATTENDANCE
+// ATTENDANCE DATE
 $('#attendanceDate').value=today;
 $('#attendanceDate').addEventListener('change',renderAttendance);
 
@@ -423,17 +484,14 @@ $('#menu').addEventListener('click',()=>{
 // DARK MODE
 $('#theme').addEventListener('click',()=>{
  document.body.classList.toggle('dark');
- localStorage.setItem(
-  'classflow_dark',
-  document.body.classList.contains('dark')?'1':'0'
- );
+ setStored('classflow_dark',document.body.classList.contains('dark')?'1':'0');
 });
 
-if(localStorage.getItem('classflow_dark')==='1'){
+if(getStored('classflow_dark')==='1'){
  document.body.classList.add('dark');
 }
 
-// DATE AND INITIAL DISPLAY
+// DATE DISPLAY
 $('#todayLabel').textContent=
  new Intl.DateTimeFormat(undefined,{
   weekday:'long',month:'long',day:'numeric'
@@ -452,118 +510,98 @@ render();
 
 })();
 
-/ CLASSFLOW AUTHENTICATION — FIXED LOGIN
-(function () {
-  'use strict';
+// LOGIN AND LOGOUT
+(function(){
+'use strict';
 
-  const screen = document.getElementById('cfLoginScreen');
-  const form = document.getElementById('cfLoginForm');
+function startAuth(){
+ const screen=document.getElementById('cfLoginScreen');
+ const form=document.getElementById('cfLoginForm');
 
-  if (!screen || !form) return;
+ if(!screen||!form)return;
 
-  const username = document.getElementById('cfUsername');
-  const password = document.getElementById('cfPassword');
-  const toggle = document.getElementById('cfTogglePassword');
-  const error = document.getElementById('cfLoginError');
-  const submit = form.querySelector('[type="submit"]');
+ const username=document.getElementById('cfUsername');
+ const password=document.getElementById('cfPassword');
+ const toggle=document.getElementById('cfTogglePassword');
+ const error=document.getElementById('cfLoginError');
+ const KEY='classflowLoggedIn';
 
-  const SESSION_KEY = 'classflowLoggedIn';
+ function showDashboard(){
+  screen.classList.add('cf-login-hidden');
+  screen.setAttribute('aria-hidden','true');
+ }
 
-  function readSession() {
-    try {
-      return localStorage.getItem(SESSION_KEY) === 'true';
-    } catch (e) {
-      return false;
-    }
+ function showLogin(){
+  screen.classList.remove('cf-login-hidden');
+  screen.removeAttribute('aria-hidden');
+ }
+
+ function clearError(){
+  error.textContent='';
+  error.classList.remove('visible');
+  form.classList.remove('cf-shake');
+ }
+
+ function showError(message){
+  error.textContent=message;
+  error.classList.add('visible');
+  form.classList.remove('cf-shake');
+  void form.offsetWidth;
+  form.classList.add('cf-shake');
+ }
+
+ // Restore previous login if storage is available
+ if(getStored(KEY)==='true')showDashboard();
+ else showLogin();
+
+ form.addEventListener('submit',function(e){
+  e.preventDefault();
+  clearError();
+
+  const user=username.value.trim().toLowerCase();
+  const pass=password.value;
+
+  if(user==='admin'&&pass==='1234'){
+   setStored(KEY,'true');
+   showDashboard();
+   toast('Welcome back, Administrator!');
+  }else{
+   showError('Incorrect username or password.');
+   password.focus();
+   password.select();
   }
+ });
 
-  function writeSession(value) {
-    try {
-      if (value) {
-        localStorage.setItem(SESSION_KEY, 'true');
-      } else {
-        localStorage.removeItem(SESSION_KEY);
-      }
-    } catch (e) {
-      // Login will still work for the current page.
-    }
-  }
+ username.addEventListener('input',clearError);
+ password.addEventListener('input',clearError);
 
-  function setAuthenticated(isLoggedIn) {
-    screen.classList.toggle('cf-login-hidden', isLoggedIn);
-    screen.setAttribute('aria-hidden', isLoggedIn ? 'true' : 'false');
-  }
-
-  function showError(message) {
-    error.textContent = message;
-    error.classList.add('visible');
-    form.classList.remove('cf-shake');
-    void form.offsetWidth;
-    form.classList.add('cf-shake');
-  }
-
-  function clearError() {
-    error.textContent = '';
-    error.classList.remove('visible');
-    form.classList.remove('cf-shake');
-  }
-
-  // Restore login state when page reloads
-  setAuthenticated(readSession());
-
-  form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    clearError();
-
-    const user = username.value.trim();
-    const pass = password.value;
-
-    if (!user || !pass) {
-      showError('Please enter your username and password.');
-      return;
-    }
-
-    if (user.toLowerCase() === 'admin' && pass === '1234') {
-      writeSession(true);
-      setAuthenticated(true);
-      submit.disabled = false;
-      return;
-    }
-
-    showError('Incorrect username or password.');
-    password.focus();
-    password.select();
+ if(toggle){
+  toggle.addEventListener('click',function(){
+   const reveal=password.type==='password';
+   password.type=reveal?'text':'password';
+   toggle.textContent=reveal?'HIDE':'SHOW';
+   toggle.setAttribute('aria-label',reveal?'Hide password':'Show password');
   });
+ }
 
-  [username, password].forEach(function (field) {
-    field.addEventListener('input', clearError);
-  });
+ window.classFlowLogout=function(){
+  if(!confirm('Are you sure you want to log out?'))return;
 
-  // Show / hide password
-  if (toggle) {
-    toggle.addEventListener('click', function () {
-      const reveal = password.type === 'password';
-      password.type = reveal ? 'text' : 'password';
-      toggle.textContent = reveal ? 'HIDE' : 'SHOW';
-    });
-  }
+  removeStored(KEY);
+  form.reset();
+  password.type='password';
 
-  // Logout
-  window.classFlowLogout = function () {
-    if (!window.confirm('Log out of ClassFlow?')) return;
+  if(toggle)toggle.textContent='SHOW';
 
-    writeSession(false);
-    form.reset();
-    clearError();
+  clearError();
+  showLogin();
+  username.focus();
+ };
+}
 
-    password.type = 'password';
-
-    if (toggle) {
-      toggle.textContent = 'SHOW';
-    }
-
-    setAuthenticated(false);
-    username.focus();
-  };
-
+if(document.readyState==='loading'){
+ document.addEventListener('DOMContentLoaded',startAuth,{once:true});
+}else{
+ startAuth();
+}
 })();
