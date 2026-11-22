@@ -452,7 +452,7 @@ render();
 
 })();
 
-// CLASSFLOW AUTHENTICATION + POLISHED TRANSITIONS
+/ CLASSFLOW AUTHENTICATION — FIXED LOGIN
 (function () {
   'use strict';
 
@@ -469,32 +469,34 @@ render();
 
   const SESSION_KEY = 'classflowLoggedIn';
 
+  function readSession() {
+    try {
+      return localStorage.getItem(SESSION_KEY) === 'true';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function writeSession(value) {
+    try {
+      if (value) {
+        localStorage.setItem(SESSION_KEY, 'true');
+      } else {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    } catch (e) {
+      // Login will still work for the current page.
+    }
+  }
+
   function setAuthenticated(isLoggedIn) {
     screen.classList.toggle('cf-login-hidden', isLoggedIn);
-    document.body.classList.toggle('cf-authenticated', isLoggedIn);
-
-    if (isLoggedIn) {
-      screen.setAttribute('aria-hidden', 'true');
-
-      setTimeout(() => {
-        screen.style.display = 'none';
-      }, 550);
-    } else {
-      screen.style.display = 'flex';
-      screen.removeAttribute('aria-hidden');
-
-      requestAnimationFrame(() => {
-        screen.classList.remove('cf-login-hidden');
-      });
-
-      setTimeout(() => username.focus(), 100);
-    }
+    screen.setAttribute('aria-hidden', isLoggedIn ? 'true' : 'false');
   }
 
   function showError(message) {
     error.textContent = message;
     error.classList.add('visible');
-
     form.classList.remove('cf-shake');
     void form.offsetWidth;
     form.classList.add('cf-shake');
@@ -506,12 +508,9 @@ render();
     form.classList.remove('cf-shake');
   }
 
-  // Check saved login session
-  setAuthenticated(
-    localStorage.getItem(SESSION_KEY) === 'true'
-  );
+  // Restore login state when page reloads
+  setAuthenticated(readSession());
 
-  // LOGIN
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     clearError();
@@ -520,107 +519,51 @@ render();
     const pass = password.value;
 
     if (!user || !pass) {
-      showError('Please enter both your username and password.');
+      showError('Please enter your username and password.');
       return;
     }
 
-    submit.disabled = true;
-    submit.classList.add('is-loading');
+    if (user.toLowerCase() === 'admin' && pass === '1234') {
+      writeSession(true);
+      setAuthenticated(true);
+      submit.disabled = false;
+      return;
+    }
 
-    const label = submit.querySelector('span:first-child');
-    const oldLabel = label.textContent;
-
-    label.textContent = 'Authenticating...';
-
-    window.setTimeout(() => {
-      if (
-        user.toLowerCase() === 'admin' &&
-        pass === '1234'
-      ) {
-        localStorage.setItem(SESSION_KEY, 'true');
-
-        label.textContent = 'Welcome back!';
-        setAuthenticated(true);
-
-        if (typeof toast === 'function') {
-          toast('Welcome back, Administrator!');
-        }
-      } else {
-        showError('Incorrect username or password. Please try again.');
-
-        submit.disabled = false;
-        submit.classList.remove('is-loading');
-        label.textContent = oldLabel;
-
-        password.focus();
-        password.select();
-      }
-    }, 450);
+    showError('Incorrect username or password.');
+    password.focus();
+    password.select();
   });
 
-  // Clear error while typing
-  [username, password].forEach(field => {
+  [username, password].forEach(function (field) {
     field.addEventListener('input', clearError);
   });
 
-  // SHOW / HIDE PASSWORD
-  toggle.addEventListener('click', function () {
-    const reveal = password.type === 'password';
+  // Show / hide password
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      const reveal = password.type === 'password';
+      password.type = reveal ? 'text' : 'password';
+      toggle.textContent = reveal ? 'HIDE' : 'SHOW';
+    });
+  }
 
-    password.type = reveal ? 'text' : 'password';
-    toggle.textContent = reveal ? 'HIDE' : 'SHOW';
-
-    toggle.setAttribute(
-      'aria-label',
-      reveal ? 'Hide password' : 'Show password'
-    );
-
-    password.focus();
-  });
-
-  // LOGOUT
+  // Logout
   window.classFlowLogout = function () {
-    if (localStorage.getItem(SESSION_KEY) !== 'true') return;
-
     if (!window.confirm('Log out of ClassFlow?')) return;
 
-    localStorage.removeItem(SESSION_KEY);
-
+    writeSession(false);
     form.reset();
     clearError();
 
     password.type = 'password';
-    toggle.textContent = 'SHOW';
-    toggle.setAttribute('aria-label', 'Show password');
 
-    submit.disabled = false;
-    submit.classList.remove('is-loading');
-
-    const label = submit.querySelector('span:first-child');
-
-    if (label) {
-      label.textContent = 'Sign In to Dashboard';
+    if (toggle) {
+      toggle.textContent = 'SHOW';
     }
 
-    screen.style.display = 'flex';
-
-    requestAnimationFrame(() => {
-      setAuthenticated(false);
-    });
-
-    if (typeof toast === 'function') {
-      toast('You have been logged out.');
-    }
+    setAuthenticated(false);
+    username.focus();
   };
-
-  // Keyboard accessibility for logout
-  document.querySelectorAll('[onclick="classFlowLogout()"]').forEach(button => {
-    button.addEventListener('keydown', event => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        window.classFlowLogout();
-      }
-    });
-  });
 
 })();
