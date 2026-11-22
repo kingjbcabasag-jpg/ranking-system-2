@@ -1,274 +1,826 @@
-// ==========================================
-// 1. DSA: LINKED LIST & 2D ARRAY STRUCTURE
-// ==========================================
-class Node {
-    constructor(id, name, score) {
-        this.id = id;
-        this.name = name;
-        this.score = Number(score);
-        this.attendance = [1, 1, 1, 1, 1]; // 5-day attendance array
-        this.remarks = "";
-        this.next = null;
-    }
+/* =====================================
+   ATTENDLY STUDENT MANAGEMENT SYSTEM
+===================================== */
+
+// STORAGE
+const STUDENT_KEY = "attendly_v2_students";
+const ATTENDANCE_KEY = "attendly_v2_attendance";
+const ACTIVITY_KEY = "attendly_v2_activities";
+
+const $ = id => document.getElementById(id);
+
+// DEFAULT STUDENTS
+let students = JSON.parse(localStorage.getItem(STUDENT_KEY)) || [
+    { id: "2026-001", name: "Lloyd" },
+    { id: "2026-002", name: "Jeston" },
+    { id: "2026-003", name: "Jefferson" },
+    { id: "2026-004", name: "King" },
+    { id: "2026-005", name: "Reymond" }
+];
+
+let records = JSON.parse(
+    localStorage.getItem(ATTENDANCE_KEY)
+) || {};
+
+let activities = JSON.parse(
+    localStorage.getItem(ACTIVITY_KEY)
+) || [];
+
+// SAVE DATA
+function saveData() {
+
+    localStorage.setItem(
+        STUDENT_KEY,
+        JSON.stringify(students)
+    );
+
+    localStorage.setItem(
+        ATTENDANCE_KEY,
+        JSON.stringify(records)
+    );
+
+    localStorage.setItem(
+        ACTIVITY_KEY,
+        JSON.stringify(activities)
+    );
+
 }
 
-class LinkedList {
-    constructor() {
-        this.head = null;
-    }
+// LOCAL DATE
+function today() {
 
-    add(id, name, score) {
-        const newNode = new Node(id, name, score);
-        if (!this.head) {
-            this.head = newNode;
-            return;
-        }
-        let curr = this.head;
-        while (curr.next) {
-            curr = curr.next;
-        }
-        curr.next = newNode;
-    }
+    const date = new Date();
 
-    remove(id) {
-        if (!this.head) return;
-        if (this.head.id === id) {
-            this.head = this.head.next;
-            return;
-        }
-        let curr = this.head;
-        while (curr.next && curr.next.id !== id) {
-            curr = curr.next;
-        }
-        if (curr.next) {
-            curr.next = curr.next.next;
-        }
-    }
+    const offset = date.getTimezoneOffset();
 
-    getAll() {
-        const list = [];
-        let curr = this.head;
-        while (curr) {
-            list.push(curr);
-            curr = curr.next;
-        }
-        return list;
-    }
+    return new Date(date.getTime() - offset * 60000)
+        .toISOString()
+        .split("T")[0];
+
 }
 
-// Initial Sample Data
-const db = new LinkedList();
-db.add("101", "Juan Dela Cruz", 88);
-db.add("102", "Maria Clara", 95);
-db.add("103", "Jose Rizal", 92);
-db.add("104", "Andres Bonifacio", 85);
+function selectedDate() {
+    return $("attendanceDate").value || today();
+}
 
-// ==========================================
-// 2. LOGIN & LOGOUT LOGIC (NO FORM RELOAD)
-// ==========================================
-const loginView = document.getElementById("loginView");
-const dashboardView = document.getElementById("dashboardView");
-const loginBox = document.getElementById("loginBox");
-const errMsg = document.getElementById("errMsg");
+// ESCAPE HTML
+function escapeHTML(value) {
 
-document.getElementById("loginBtn").addEventListener("click", function () {
-    const user = document.getElementById("userInput").value.trim();
-    const pass = document.getElementById("passInput").value.trim();
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
 
-    if (user === "admin" && pass === "1234") {
-        errMsg.style.display = "none";
-        loginView.style.opacity = "0";
-        setTimeout(() => {
-            loginView.style.display = "none";
-            dashboardView.style.display = "flex";
-            refreshUI();
-        }, 250);
+}
+
+// ATTENDANCE RECORD
+function getRecord(date) {
+
+    if (!records[date]) {
+        records[date] = {};
+    }
+
+    return records[date];
+
+}
+
+function getStatus(id, date = selectedDate()) {
+
+    return getRecord(date)[id]?.status || "Absent";
+
+}
+
+function getRemark(id, date = selectedDate()) {
+
+    return getRecord(date)[id]?.remark || "";
+
+}
+
+/* =====================================
+   LOGIN SYSTEM
+===================================== */
+
+$("loginForm").addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const username = $("username").value.trim();
+    const password = $("password").value;
+
+    if (username === "admin" && password === "1234") {
+
+        $("loginError").textContent = "";
+
+        $("loginPage").classList.add("hidden");
+
+        $("mainSystem").classList.remove("hidden");
+
+        $("attendanceDate").value = today();
+
+        renderAll();
+
     } else {
-        errMsg.style.display = "block";
-        loginBox.classList.remove("shake");
-        void loginBox.offsetWidth;
-        loginBox.classList.add("shake");
+
+        $("loginError").textContent =
+            "Incorrect username or password!";
+
     }
+
 });
 
-// Enter key support sa password input
-document.getElementById("passInput").addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-        document.getElementById("loginBtn").click();
-    }
+/* =====================================
+   LOGOUT
+===================================== */
+
+$("logoutBtn").addEventListener("click", function() {
+
+    $("mainSystem").classList.add("hidden");
+
+    $("loginPage").classList.remove("hidden");
+
+    $("username").value = "";
+
+    $("password").value = "";
+
 });
 
-document.getElementById("logoutBtn").addEventListener("click", function () {
-    dashboardView.style.display = "none";
-    loginView.style.display = "flex";
-    setTimeout(() => {
-        loginView.style.opacity = "1";
-    }, 10);
-});
+/* =====================================
+   PAGE NAVIGATION
+===================================== */
 
-// ==========================================
-// 3. TAB NAVIGATION
-// ==========================================
-document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", function () {
-        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
+const pageTitles = {
+    dashboard: "Dashboard",
+    attendance: "Attendance",
+    activities: "Student Activities",
+    students: "List Students",
+    ranking: "Rankings"
+};
+
+document.querySelectorAll(".nav-btn").forEach(button => {
+
+    button.addEventListener("click", function() {
+
+        const page = this.dataset.page;
+
+        document.querySelectorAll(".nav-btn")
+            .forEach(btn => btn.classList.remove("active"));
+
         this.classList.add("active");
 
-        const target = this.getAttribute("data-target");
-        document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
-        document.getElementById(target).classList.add("active");
+        document.querySelectorAll(".page")
+            .forEach(section => section.classList.remove("active"));
 
-        document.getElementById("headerTitle").innerText = this.innerText;
-        refreshUI();
+        $(page).classList.add("active");
+
+        $("pageTitle").textContent = pageTitles[page];
+
+        renderAll();
+
     });
+
 });
 
-// ==========================================
-// 4. ADD, DELETE, ATTENDANCE & REMARKS
-// ==========================================
-document.getElementById("addStudentBtn").addEventListener("click", function () {
-    const id = document.getElementById("newId").value.trim();
-    const name = document.getElementById("newName").value.trim();
-    const score = document.getElementById("newScore").value.trim();
+/* =====================================
+   ATTENDANCE MANAGEMENT
+===================================== */
 
-    if (!id || !name || score === "") {
-        alert("Please fill out all fields!");
-        return;
-    }
+function renderAttendance() {
 
-    if (db.getAll().some(s => s.id === id)) {
-        alert("Student ID already exists!");
-        return;
-    }
+    const search = $("attendanceSearch").value.toLowerCase();
 
-    db.add(id, name, score);
-    document.getElementById("newId").value = "";
-    document.getElementById("newName").value = "";
-    document.getElementById("newScore").value = "";
-    refreshUI();
-});
-
-function removeStudent(id) {
-    db.remove(id);
-    refreshUI();
-}
-
-function toggleDay(id, dayIdx) {
-    let curr = db.head;
-    while (curr) {
-        if (curr.id === id) {
-            curr.attendance[dayIdx] = curr.attendance[dayIdx] === 1 ? 0 : 1;
-            break;
-        }
-        curr = curr.next;
-    }
-    refreshUI();
-}
-
-function saveRemark(id, text) {
-    let curr = db.head;
-    while (curr) {
-        if (curr.id === id) {
-            curr.remarks = text;
-            break;
-        }
-        curr = curr.next;
-    }
-}
-
-// ==========================================
-// 5. DSA: BUBBLE SORT & LINEAR SEARCH
-// ==========================================
-function countPresent(arr) {
-    return arr.reduce((a, b) => a + b, 0);
-}
-
-function calcPoints(student) {
-    return (countPresent(student.attendance) * 10) + student.score;
-}
-
-function bubbleSortRank(list) {
-    const arr = [...list];
-    for (let i = 0; i < arr.length - 1; i++) {
-        for (let j = 0; j < arr.length - i - 1; j++) {
-            if (calcPoints(arr[j]) < calcPoints(arr[j + 1])) {
-                let temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
-            }
-        }
-    }
-    return arr;
-}
-
-document.getElementById("searchBox").addEventListener("keyup", function () {
-    const q = this.value.toLowerCase();
-    const filtered = db.getAll().filter(s =>
-        s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)
+    const filtered = students.filter(student =>
+        student.name.toLowerCase().includes(search) ||
+        student.id.toLowerCase().includes(search)
     );
-    renderTables(filtered);
-});
 
-// ==========================================
-// 6. RENDER TABLES
-// ==========================================
-function refreshUI() {
-    renderTables(db.getAll());
-}
+    $("attendanceTable").innerHTML = filtered.map(student => {
 
-function renderTables(students) {
-    const ranked = bubbleSortRank(students);
+        const status = getStatus(student.id);
 
-    document.getElementById("statTotal").innerText = students.length;
-    document.getElementById("statTop").innerText = ranked.length > 0 ? ranked[0].name : "-";
-
-    // Dashboard Table
-    document.getElementById("tblDashboard").innerHTML = students.map(s => `
-        <tr>
-            <td>${s.id}</td>
-            <td>${s.name}</td>
-            <td>${countPresent(s.attendance)} / 5</td>
-            <td>${s.score}</td>
-            <td><strong>${calcPoints(s)}</strong></td>
-        </tr>
-    `).join("");
-
-    // Attendance Table
-    document.getElementById("tblAttendance").innerHTML = students.map(s => {
-        const days = s.attendance.map((val, idx) =>
-            <td><input type="checkbox" ${val === 1 ? "checked" : ""} onchange="toggleDay('${s.id}', ${idx})"></td>
-        ).join("");
         return `
             <tr>
-                <td>${s.id}</td>
-                <td>${s.name}</td>
-                ${days}
-                <td><input type="text" class="remark-box" value="${s.remarks}" placeholder="Note..." onchange="saveRemark('${s.id}', this.value)"></td>
+
+                <td>${escapeHTML(student.id)}</td>
+
+                <td>${escapeHTML(student.name)}</td>
+
+                <td>
+                    <select data-status="${escapeHTML(student.id)}">
+
+                        <option value="Present"
+                            ${status === "Present" ? "selected" : ""}>
+                            Present
+                        </option>
+
+                        <option value="Absent"
+                            ${status === "Absent" ? "selected" : ""}>
+                            Absent
+                        </option>
+
+                    </select>
+                </td>
+
+                <td>
+                    <input
+                        type="text"
+                        placeholder="Enter remarks"
+                        value="${escapeHTML(getRemark(student.id))}"
+                        data-remark="${escapeHTML(student.id)}"
+                    >
+                </td>
+
             </tr>
         `;
+
     }).join("");
 
-    // Students List Table
-    document.getElementById("tblStudents").innerHTML = students.map(s => `
-        <tr>
-            <td>${s.id}</td>
-            <td>${s.name}</td>
-            <td>${s.score}</td>
-            <td><button class="btn-del" onclick="removeStudent('${s.id}')">Delete</button></td>
-        </tr>
-    `).join("");
-
-    // Ranking Table
-    document.getElementById("tblRanking").innerHTML = ranked.map((s, idx) => `
-        <tr>
-            <td><strong>#${idx + 1}</strong></td>
-            <td>${s.id}</td>
-            <td>${s.name}</td>
-            <td>${countPresent(s.attendance)} / 5</td>
-            <td>${s.score}</td>
-            <td><strong>${calcPoints(s)}</strong></td>
-        </tr>
-    `).join("");
 }
 
-refreshUI();
+// CHANGE ATTENDANCE STATUS
+$("attendanceTable").addEventListener("change", function(event) {
+
+    const select = event.target.closest("[data-status]");
+
+    if (!select) return;
+
+    const id = select.dataset.status;
+    const current = getRecord(selectedDate())[id] || {};
+
+    getRecord(selectedDate())[id] = {
+        status: select.value,
+        remark: current.remark || ""
+    };
+
+    saveData();
+
+    renderAll();
+
+});
+
+// SAVE REMARKS
+$("attendanceTable").addEventListener("change", function(event) {
+
+    const input = event.target.closest("[data-remark]");
+
+    if (!input) return;
+
+    const id = input.dataset.remark;
+    const current = getRecord(selectedDate())[id] || {};
+
+    getRecord(selectedDate())[id] = {
+        status: current.status || "Absent",
+        remark: input.value
+    };
+
+    saveData();
+
+});
+
+$("attendanceSearch").addEventListener("input", renderAttendance);
+
+$("attendanceDate").addEventListener("change", renderAll);
+
+/* =====================================
+   STUDENT MANAGEMENT
+===================================== */
+
+// ADD STUDENT MODAL
+$("openModal").addEventListener("click", function() {
+
+    $("studentModal").classList.remove("hidden");
+
+});
+
+$("closeModal").addEventListener("click", function() {
+
+    $("studentModal").classList.add("hidden");
+
+});
+
+// SAVE STUDENT
+$("studentForm").addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const id = $("newID").value.trim();
+    const name = $("newName").value.trim();
+
+    if (!id || !name) return;
+
+    const exists = students.some(student =>
+        student.id.toLowerCase() === id.toLowerCase()
+    );
+
+    if (exists) {
+
+        alert("Student ID already exists!");
+
+        return;
+
+    }
+
+    students.push({
+        id: id,
+        name: name
+    });
+
+    saveData();
+
+    $("studentForm").reset();
+
+    $("studentModal").classList.add("hidden");
+
+    renderAll();
+
+    alert("Student successfully added!");
+
+});
+
+// DAYS PRESENT
+function getDaysPresent(id) {
+
+    let total = 0;
+
+    Object.values(records).forEach(day => {
+
+        if (day[id]?.status === "Present") {
+            total++;
+        }
+
+    });
+
+    return total;
+
+}
+
+// ATTENDANCE RATE
+function getAttendanceRate(id) {
+
+    const dates = Object.keys(records);
+
+    if (dates.length === 0) return 0;
+
+    return Math.round(
+        (getDaysPresent(id) / dates.length) * 100
+    );
+
+}
+
+// STUDENT TABLE
+function renderStudents() {
+
+    const search = $("studentSearch").value.toLowerCase();
+
+    const filtered = students.filter(student =>
+        student.name.toLowerCase().includes(search) ||
+        student.id.toLowerCase().includes(search)
+    );
+
+    $("studentTable").innerHTML = filtered.map(student => {
+
+        return `
+            <tr>
+
+                <td>${escapeHTML(student.id)}</td>
+
+                <td>${escapeHTML(student.name)}</td>
+
+                <td>${getDaysPresent(student.id)}</td>
+
+                <td>${getAttendanceRate(student.id)}%</td>
+
+                <td>
+                    <button class="delete-btn"
+                        data-delete="${escapeHTML(student.id)}">
+                        Delete
+                    </button>
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+
+}
+
+// DELETE STUDENT
+$("studentTable").addEventListener("click", function(event) {
+
+    const button = event.target.closest("[data-delete]");
+
+    if (!button) return;
+
+    const id = button.dataset.delete;
+
+    if (!confirm("Are you sure you want to delete this student?")) {
+        return;
+    }
+
+    students = students.filter(student => student.id !== id);
+
+    Object.values(records).forEach(day => {
+        delete day[id];
+    });
+
+    activities = activities.filter(
+        activity => activity.studentID !== id
+    );
+
+    saveData();
+
+    renderAll();
+
+});
+
+$("studentSearch").addEventListener("input", renderStudents);
+
+/* =====================================
+   ACTIVITIES MANAGEMENT
+===================================== */
+
+// LOAD STUDENTS TO DROPDOWN
+function loadActivityStudents() {
+
+    const select = $("activityStudent");
+
+    const current = select.value;
+
+    select.innerHTML = `
+        <option value="">Select Student</option>
+    `;
+
+    students.forEach(student => {
+
+        const option = document.createElement("option");
+
+        option.value = student.id;
+
+        option.textContent = student.name;
+
+        select.appendChild(option);
+
+    });
+
+    if (students.some(student => student.id === current)) {
+        select.value = current;
+    }
+
+}
+
+// ADD ACTIVITY
+$("activityForm").addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const studentID = $("activityStudent").value;
+
+    const activityName = $("activityName").value.trim();
+
+    const score = Number($("activityScore").value);
+
+    const total = Number($("activityTotal").value);
+
+    if (!studentID || !activityName) {
+
+        alert("Please complete all fields!");
+
+        return;
+
+    }
+
+    if (
+        !Number.isFinite(score) ||
+        !Number.isFinite(total) ||
+        total <= 0 ||
+        score < 0 ||
+        score > total
+    ) {
+
+        alert("Invalid score! Please check your inputs.");
+
+        return;
+
+    }
+
+    const student = students.find(
+        item => item.id === studentID
+    );
+
+    if (!student) {
+
+        alert("Student not found!");
+
+        return;
+
+    }
+
+    const newActivity = {
+
+        id: Date.now() + Math.random(),
+
+        studentID: studentID,
+
+        studentName: student.name,
+
+        activityName: activityName,
+
+        score: score,
+
+        total: total,
+
+        percentage: Math.round((score / total) * 100),
+
+        date: today()
+
+    };
+
+    activities.push(newActivity);
+
+    saveData();
+
+    $("activityForm").reset();
+
+    renderAll();
+
+    alert("Activity successfully saved!");
+
+});
+
+// DISPLAY ACTIVITIES
+function renderActivities() {
+
+    const search = $("activitySearch").value.toLowerCase();
+
+    const filtered = activities.filter(activity =>
+        activity.studentName.toLowerCase().includes(search) ||
+        activity.activityName.toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) {
+
+        $("activityTable").innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;">
+                    No activity records found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+    $("activityTable").innerHTML = filtered.slice().reverse().map(activity => {
+
+        return `
+            <tr>
+
+                <td>${escapeHTML(activity.studentName)}</td>
+
+                <td>${escapeHTML(activity.activityName)}</td>
+
+                <td>
+                    <strong>${activity.score} / ${activity.total}</strong>
+                </td>
+
+                <td>
+                    <span class="activity-percentage">
+                        ${activity.percentage}%
+                    </span>
+                </td>
+
+                <td>${escapeHTML(activity.date)}</td>
+
+                <td>
+                    <button class="delete-activity"
+                        data-activity-delete="${activity.id}">
+                        Delete
+                    </button>
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+
+}
+
+// DELETE ACTIVITY
+$("activityTable").addEventListener("click", function(event) {
+
+    const button = event.target.closest("[data-activity-delete]");
+
+    if (!button) return;
+
+    const id = Number(button.dataset.activityDelete);
+
+    if (!confirm("Delete this activity record?")) return;
+
+    activities = activities.filter(
+        activity => activity.id !== id
+    );
+
+    saveData();
+
+    renderAll();
+
+});
+
+// ACTIVITY SEARCH
+$("activitySearch").addEventListener("input", renderActivities);
+
+/* =====================================
+   STUDENT PERFORMANCE AND RANKING
+===================================== */
+
+// ACTIVITY AVERAGE
+function getActivityAverage(id) {
+
+    const studentActivities = activities.filter(
+        activity => activity.studentID === id
+    );
+
+    if (studentActivities.length === 0) return 0;
+
+    const total = studentActivities.reduce(
+        (sum, activity) => sum + activity.percentage,
+        0
+    );
+
+    return Math.round(total / studentActivities.length);
+
+}
+
+// OVERALL PERFORMANCE
+function getOverallScore(id) {
+
+    const attendance = getAttendanceRate(id);
+
+    const activityList = activities.filter(
+        activity => activity.studentID === id
+    );
+
+    // If there are no activities, use attendance only.
+    if (activityList.length === 0) {
+        return attendance;
+    }
+
+    const activityAverage = getActivityAverage(id);
+
+    return Math.round((attendance + activityAverage) / 2);
+
+}
+
+// RANKING TABLE
+function renderRanking() {
+
+    const ranked = [...students].sort((a, b) => {
+
+        return getOverallScore(b.id) - getOverallScore(a.id);
+
+    });
+
+    if (ranked.length === 0) {
+
+        $("topStudent").textContent = "No student yet";
+
+        $("topRate").textContent = "No records available";
+
+        $("rankingTable").innerHTML = "";
+
+        return;
+
+    }
+
+    const top = ranked[0];
+
+    $("topStudent").textContent = top.name;
+
+    $("topRate").textContent =
+        "Overall Performance: " + getOverallScore(top.id) + "%";
+
+    $("rankingTable").innerHTML = ranked.map((student, index) => {
+
+        return `
+            <tr>
+
+                <td><strong>#${index + 1}</strong></td>
+
+                <td>${escapeHTML(student.name)}</td>
+
+                <td>${getAttendanceRate(student.id)}%</td>
+
+                <td>${getActivityAverage(student.id)}%</td>
+
+                <td>
+                    <strong>${getOverallScore(student.id)}%</strong>
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+
+}
+
+/* =====================================
+   DASHBOARD
+===================================== */
+
+function renderDashboard() {
+
+    const dailyRecord = getRecord(today());
+
+    const present = students.filter(student =>
+        dailyRecord[student.id]?.status === "Present"
+    ).length;
+
+    const absent = students.length - present;
+
+    const rate = students.length
+        ? Math.round((present / students.length) * 100)
+        : 0;
+
+    $("totalStudents").textContent = students.length;
+
+    $("presentStudents").textContent = present;
+
+    $("absentStudents").textContent = absent;
+
+    $("attendanceRate").textContent = rate + "%";
+
+    // ATTENDANCE LIST
+    $("dashboardList").innerHTML = students.length
+        ? students.slice(0, 5).map(student => {
+
+            const status = getStatus(student.id, today());
+
+            return `
+                <div class="dashboard-row">
+
+                    <strong>${escapeHTML(student.name)}</strong>
+
+                    <span class="${status.toLowerCase()}">
+                        ${status}
+                    </span>
+
+                </div>
+            `;
+
+        }).join("")
+        : "<p>No students registered.</p>";
+
+    // RECENT ACTIVITIES
+    const recent = activities.slice(-5).reverse();
+
+    $("recentActivities").innerHTML = recent.length
+        ? recent.map(activity => `
+            <div class="dashboard-row">
+
+                <strong>
+                    ${escapeHTML(activity.studentName)}
+                </strong>
+
+                <span>
+                    ${escapeHTML(activity.activityName)}
+                    - ${activity.percentage}%
+                </span>
+
+            </div>
+        `).join("")
+        : "<p>No activities recorded yet.</p>";
+
+}
+
+/* =====================================
+   RENDER ALL
+===================================== */
+
+function renderAll() {
+
+    renderDashboard();
+
+    renderAttendance();
+
+    renderStudents();
+
+    loadActivityStudents();
+
+    renderActivities();
+
+    renderRanking();
+
+}
+
+/* =====================================
+   INITIAL SETUP
+===================================== */
+
+$("attendanceDate").value = today();
+
+saveData();
+
+renderAll();
