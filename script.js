@@ -1,12 +1,14 @@
 // ==========================================
-// 1. DSA: LINKED LIST + 2D ATTENDANCE + ACTIVITY SCORES
+// 1. DSA: LINKED LIST + DYNAMIC 2D ATTENDANCE + ACTIVITY SCORES
 // ==========================================
+let attendanceDaysCount = 5; // Napapalitan ng user (1 to 30 days)
+
 class StudentNode {
-    constructor(id, name, scores = []) {
+    constructor(id, name, scores = [], days = attendanceDaysCount) {
         this.id = id;
         this.name = name;
-        this.attendance = [1, 1, 1, 1, 1]; // 5-day attendance row (1 = Present, 0 = Absent)
-        this.scores = [...scores];         // Array of scores aligned with activities
+        this.attendance = Array.from({ length: days }, () => 1); // 1 = Present, 0 = Absent
+        this.scores = [...scores];
         this.next = null;
     }
 }
@@ -17,7 +19,7 @@ class StudentLinkedList {
     }
 
     add(id, name, scores = []) {
-        const node = new StudentNode(id, name, scores);
+        const node = new StudentNode(id, name, scores, attendanceDaysCount);
         if (!this.head) {
             this.head = node;
             return;
@@ -68,26 +70,58 @@ const activities = [
     { title: "Activity 2: Lab", max: 50 }
 ];
 
-// Initialize Linked List
+// Initialize Linked List with requested names
 const roster = new StudentLinkedList();
-roster.add("STU-01", "Elena Reyes", [46, 48]);
-roster.add("STU-02", "Marcus Santos", [42, 45]);
-roster.add("STU-03", "Ariana Lim", [49, 47]);
-roster.add("STU-04", "Devon Cruz", [38, 40]);
+roster.add("STU-01", "Lloyd", [46, 48]);
+roster.add("STU-02", "King", [44, 47]);
+roster.add("STU-03", "Jeston", [49, 45]);
+roster.add("STU-04", "Jefferson", [41, 43]);
+roster.add("STU-05", "Reymond", [45, 42]);
+roster.add("STU-06", "Aaron", [47, 46]);
 
-function syncStudentScoreSlots() {
+function syncStudentDataSlots() {
     let curr = roster.head;
     while (curr) {
         while (curr.scores.length < activities.length) {
             curr.scores.push(0);
         }
+        if (curr.attendance.length < attendanceDaysCount) {
+            while (curr.attendance.length < attendanceDaysCount) {
+                curr.attendance.push(1);
+            }
+        } else if (curr.attendance.length > attendanceDaysCount) {
+            curr.attendance = curr.attendance.slice(0, attendanceDaysCount);
+        }
         curr = curr.next;
     }
 }
-syncStudentScoreSlots();
+syncStudentDataSlots();
 
 // ==========================================
-// 2. LOGIN & LOGOUT
+// 2. 3D MOUSE TILT EFFECT ON CARDS
+// ==========================================
+function bind3DTiltEffects() {
+    document.querySelectorAll(".tilt-card").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const midX = rect.width / 2;
+            const midY = rect.height / 2;
+            const rotateY = ((x - midX) / midX) * 6;
+            const rotateX = -((y - midY) / midY) * 6;
+            card.style.transform = `perspective(1100px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(10px)`;
+        });
+
+        card.addEventListener("mouseleave", () => {
+            card.style.transform = "perspective(1100px) rotateX(0deg) rotateY(0deg) translateZ(0px)";
+        });
+    });
+}
+bind3DTiltEffects();
+
+// ==========================================
+// 3. LOGIN & LOGOUT WITH 3D TRANSITION
 // ==========================================
 const loginScreen = document.getElementById("loginScreen");
 const mainApp = document.getElementById("mainApp");
@@ -105,7 +139,8 @@ function attemptLogin() {
             loginScreen.style.display = "none";
             mainApp.style.display = "flex";
             renderAll();
-        }, 320);
+            bind3DTiltEffects();
+        }, 380);
     } else {
         loginErr.style.display = "block";
         loginCard.classList.remove("shake");
@@ -122,11 +157,13 @@ document.getElementById("loginPass").addEventListener("keydown", (e) => {
 document.getElementById("logoutBtn").addEventListener("click", () => {
     mainApp.style.display = "none";
     loginScreen.style.display = "flex";
-    loginScreen.classList.remove("leaving");
+    setTimeout(() => {
+        loginScreen.classList.remove("leaving");
+    }, 10);
 });
 
 // ==========================================
-// 3. TAB TRANSITIONS
+// 4. 3D TAB TRANSITIONS
 // ==========================================
 document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -135,16 +172,31 @@ document.querySelectorAll(".nav-btn").forEach((btn) => {
 
         const targetId = btn.getAttribute("data-tab");
         document.querySelectorAll(".view-panel").forEach((panel) => panel.classList.remove("active"));
-        document.getElementById(targetId).classList.add("active");
+        const activePanel = document.getElementById(targetId);
+        activePanel.classList.remove("active");
+        void activePanel.offsetWidth;
+        activePanel.classList.add("active");
 
         document.getElementById("activeTitle").textContent = btn.textContent.replace(/^\d+\s*/, "").trim();
         renderAll();
+        bind3DTiltEffects();
     });
 });
 
 // ==========================================
-// 4. ADD STUDENT, ADD ACTIVITY, SCORES & ATTENDANCE
+// 5. CUSTOM DAYS, ADD STUDENT, ADD ACTIVITY, SCORES & ATTENDANCE
 // ==========================================
+document.getElementById("applyDaysBtn").addEventListener("click", () => {
+    const inputEl = document.getElementById("daysCountInput");
+    let newDays = Number(inputEl.value);
+    if (Number.isNaN(newDays) || newDays < 1) newDays = 1;
+    if (newDays > 30) newDays = 30;
+    inputEl.value = newDays;
+    attendanceDaysCount = newDays;
+    syncStudentDataSlots();
+    renderAll();
+});
+
 document.getElementById("addStuBtn").addEventListener("click", () => {
     const id = document.getElementById("stuId").value.trim();
     const name = document.getElementById("stuName").value.trim();
@@ -175,7 +227,7 @@ document.getElementById("addActBtn").addEventListener("click", () => {
     }
 
     activities.push({ title, max });
-    syncStudentScoreSlots();
+    syncStudentDataSlots();
     document.getElementById("actTitle").value = "";
     document.getElementById("actMax").value = "50";
     renderAll();
@@ -205,10 +257,10 @@ function updateScore(id, actIdx, rawValue) {
 }
 
 // ==========================================
-// 5. COMPUTATION, BUBBLE SORT & LINEAR SEARCH
+// 6. COMPUTATION, BUBBLE SORT & LINEAR SEARCH
 // ==========================================
 function getPresentCount(student) {
-    return student.attendance.reduce((acc, v) => acc + v, 0);
+    return student.attendance.slice(0, attendanceDaysCount).reduce((acc, v) => acc + v, 0);
 }
 
 function getScoreSum(student) {
@@ -238,7 +290,7 @@ document.getElementById("searchInput").addEventListener("input", () => {
 });
 
 // ==========================================
-// 6. RENDER UI
+// 7. RENDER UI
 // ==========================================
 function renderAll() {
     const query = document.getElementById("searchInput").value.trim().toLowerCase();
@@ -248,7 +300,8 @@ function renderAll() {
     // KPIs
     document.getElementById("kpiTotal").textContent = allStudents.length;
     document.getElementById("kpiTop").textContent = rankedAll.length > 0 ? rankedAll[0].name : "—";
-    document.getElementById("kpiActivities").textContent = activities.length;
+    document.getElementById("kpiMeta").textContent = `${attendanceDaysCount}d • ${activities.length} Act`;
+    document.getElementById("ovAttHeader").textContent = `Present (${attendanceDaysCount}d)`;
 
     // Linear Search filter
     const filtered = allStudents.filter((s) =>
@@ -260,7 +313,7 @@ function renderAll() {
         <tr>
             <td><strong>${s.id}</strong></td>
             <td>${s.name}</td>
-            <td>${getPresentCount(s)} / 5</td>
+            <td>${getPresentCount(s)} / ${attendanceDaysCount}</td>
             <td>${getScoreSum(s)}</td>
             <td><strong style="color:#22d3ee">${getTotalPoints(s)} pts</strong></td>
         </tr>
@@ -303,10 +356,20 @@ function renderAll() {
         `;
     }).join("");
 
-    // 3. 5-Day Attendance Table
+    // 3. Dynamic Attendance Table
+    const dayCols = Array.from({ length: attendanceDaysCount }, (_, i) => `<th>Day ${i + 1}</th>`).join("");
+    document.getElementById("attHead").innerHTML = `
+        <tr>
+            <th>ID</th>
+            <th>Student</th>
+            ${dayCols}
+            <th>Days Present</th>
+        </tr>
+    `;
+
     document.getElementById("attBody").innerHTML = filtered.map((s) => {
-        const pills = s.attendance.map((val, dIdx) => {
-            const isPresent = val === 1;
+        const pills = Array.from({ length: attendanceDaysCount }, (_, dIdx) => {
+            const isPresent = s.attendance[dIdx] === 1;
             return `
                 <td>
                     <button
@@ -325,7 +388,7 @@ function renderAll() {
                 <td><strong>${s.id}</strong></td>
                 <td>${s.name}</td>
                 ${pills}
-                <td><strong>${getPresentCount(s)} / 5</strong></td>
+                <td><strong>${getPresentCount(s)} / ${attendanceDaysCount}</strong></td>
             </tr>
         `;
     }).join("");
@@ -339,7 +402,7 @@ function renderAll() {
                 <td><span class="rank-badge ${rankClass}">#${idx + 1}</span></td>
                 <td><strong>${s.id}</strong></td>
                 <td>${s.name}</td>
-                <td>${getPresentCount(s)} / 5</td>
+                <td>${getPresentCount(s)} / ${attendanceDaysCount}</td>
                 <td>${getScoreSum(s)}</td>
                 <td><strong style="color:#34d399">${getTotalPoints(s)} pts</strong></td>
             </tr>
