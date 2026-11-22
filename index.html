@@ -1,177 +1,217 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111827">
-  <title>ClassFlow — Classroom Command Center</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APEX RANK // Student Attendance & Ranking System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-shell hidden" id="app">
-    <aside class="sidebar" id="sidebar">
-      <a class="brand" href="#" aria-label="ClassFlow home">
-        <span class="brand-mark">C</span><span>class<span class="brand-accent">flow</span></span>
-      </a>
-      <div class="workspace-label">WORKSPACE</div>
-      <nav class="nav-list" aria-label="Main navigation">
-        <button class="nav-link active" data-page="overview"><span class="nav-icon">◫</span> Overview</button>
-        <button class="nav-link" data-page="students"><span class="nav-icon">♙</span> Students <span class="nav-count" id="studentNavCount">0</span></button>
-        <button class="nav-link" data-page="activities"><span class="nav-icon">▤</span> Activities</button>
-        <button class="nav-link" data-page="grades"><span class="nav-icon">▦</span> Grades</button>
-        <button class="nav-link" data-page="attendance"><span class="nav-icon">◷</span> Attendance</button>
-        <button class="nav-link" data-page="rankings"><span class="nav-icon">✧</span> Rankings</button>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="sidebar-tip">
-          <span class="tip-orb">✦</span>
-          <strong>Stay on track</strong>
-          <p>A little progress every day adds up.</p>
+
+    <!-- Ambient Glow Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- ========================================== -->
+    <!-- LOGIN SCREEN -->
+    <!-- ========================================== -->
+    <div id="loginScreen" class="auth-overlay">
+        <div class="auth-card" id="loginCard">
+            <div class="badge">DSA v3.0 • LIVE SYSTEM</div>
+            <h1 class="logo">APEX<span>RANK</span></h1>
+            <p class="auth-sub">Attendance, Activities & Ranking Command</p>
+
+            <div class="input-field">
+                <label>Username</label>
+                <input type="text" id="loginUser" value="admin" placeholder="admin">
+            </div>
+
+            <div class="input-field">
+                <label>Password</label>
+                <input type="password" id="loginPass" value="1234" placeholder="1234">
+            </div>
+
+            <p id="loginErr" class="auth-err">Invalid credentials! Try admin / 1234</p>
+            <button type="button" id="loginBtn" class="btn-glow">Enter Command Center →</button>
+            <span class="auth-hint">Default Access: <strong>admin</strong> / <strong>1234</strong></span>
         </div>
-        <button class="nav-link" id="themeToggle"><span class="nav-icon">◐</span> Toggle appearance</button>
-        <button class="nav-link logout-link" id="logoutButton"><span class="nav-icon">↗</span> Log out</button>
-        <div class="user-mini">
-          <div class="avatar avatar-purple">AD</div>
-          <div><strong>Administrator</strong><small>ClassFlow workspace</small></div>
-          <span class="online-dot"></span>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main-area">
-      <header class="topbar">
-        <div class="topbar-left">
-          <button class="icon-button mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
-          <div><div class="eyebrow" id="pageEyebrow">YOUR CLASSROOM AT A GLANCE</div><h1 id="pageTitle">Overview</h1></div>
-        </div>
-        <div class="topbar-actions">
-          <label class="global-search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Search students..." autocomplete="off"><kbd>⌘ K</kbd></label>
-          <button class="icon-button" id="exportButton" title="Export data" aria-label="Export data">⇩</button>
-          <button class="primary-button" id="quickAddButton"><span>＋</span> Add student</button>
-        </div>
-      </header>
-
-      <section class="page active" id="page-overview">
-        <div class="hero-panel">
-          <div class="hero-copy">
-            <div class="hero-chip"><span class="pulse-dot"></span> CLASSROOM COMMAND CENTER</div>
-            <h2>Make every lesson<br><em>count.</em></h2>
-            <p>Your classroom, organized. Keep an eye on student progress, activities, and attendance—all in one place.</p>
-            <button class="hero-button" data-go="students">Explore students <span>↗</span></button>
-          </div>
-          <div class="hero-art" aria-hidden="true">
-            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-            <div class="art-card art-card-main"><span class="art-symbol">✦</span><strong>Progress</strong><b>+24.8%</b><small>Class momentum</small><div class="mini-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
-            <div class="art-card art-card-float"><span class="float-check">✓</span><div><strong>You're on track</strong><small>Keep it going</small></div></div>
-            <div class="art-glow"></div>
-          </div>
-        </div>
-
-        <div class="section-heading"><div><div class="eyebrow">LIVE SNAPSHOT</div><h2>Class overview</h2></div><span class="date-pill" id="todayLabel">Today</span></div>
-        <div class="stats-grid">
-          <article class="stat-card"><div class="stat-top"><span class="stat-icon violet">♙</span><span class="stat-trend">STUDENTS</span></div><strong id="statStudents">0</strong><small>Students in your roster</small><div class="stat-line violet-line"></div></article>
-          <article class="stat-card"><div class="stat-top"><span class="stat-icon cyan">▤</span><span class="stat-trend">ACTIVITIES</span></div><strong id="statActivities">0</strong><small>Learning activities created</small><div class="stat-line cyan-line"></div></article>
-          <article class="stat-card"><div class="stat-top"><span class="stat-icon orange">▦</span><span class="stat-trend">GRADE RECORDS</span></div><strong id="statGrades">0</strong><small>Scores saved in your class</small><div class="stat-line orange-line"></div></article>
-          <article class="stat-card"><div class="stat-top"><span class="stat-icon green">◷</span><span class="stat-trend">PRESENT TODAY</span></div><strong id="statAttendance">—</strong><small id="attendanceSub">Attendance not recorded yet</small><div class="stat-line green-line"></div></article>
-        </div>
-        <div class="dashboard-grid">
-          <article class="panel">
-            <div class="panel-heading"><div><div class="eyebrow">YOUR PEOPLE</div><h3>Recently added students</h3></div><button class="text-button" data-go="students">View all <span>→</span></button></div>
-            <div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>STUDENT ID</th><th>STATUS</th></tr></thead><tbody id="overviewStudents"></tbody></table></div>
-            <div class="empty-state compact hidden" id="overviewStudentsEmpty">No students yet. Add your first student to get started.</div>
-          </article>
-          <article class="panel activity-panel">
-            <div class="panel-heading"><div><div class="eyebrow">WHAT'S HAPPENING</div><h3>Recent activity</h3></div><span class="live-label"><i></i> LIVE</span></div>
-            <div id="overviewActivity" class="activity-feed"></div>
-            <div class="empty-state compact hidden" id="overviewActivityEmpty">Your latest classroom updates will appear here.</div>
-          </article>
-        </div>
-      </section>
-
-      <section class="page" id="page-students">
-        <div class="page-intro"><div><div class="eyebrow">BUILD YOUR CLASS</div><h2>Student directory</h2><p>Keep your roster up to date and easy to manage.</p></div><button class="primary-button" id="addStudentButton">＋ Add student</button></div>
-        <article class="panel">
-          <div class="toolbar"><div class="toolbar-title"><strong id="studentResultCount">0 students</strong><span>Manage your classroom roster</span></div><label class="table-search">⌕ <input id="studentSearch" type="search" placeholder="Filter students..."></label></div>
-          <div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>STUDENT ID</th><th>EMAIL / NOTE</th><th>STATUS</th><th class="align-right">ACTIONS</th></tr></thead><tbody id="studentsTable"></tbody></table></div>
-          <div class="empty-state hidden" id="studentsEmpty"><span>♙</span><strong>No students found</strong><p>Add a student or adjust your search.</p><button class="primary-button" data-action="add-student">Add a student</button></div>
-        </article>
-      </section>
-
-      <section class="page" id="page-activities">
-        <div class="page-intro"><div><div class="eyebrow">PLAN THE LEARNING</div><h2>Activities</h2><p>Create and track assignments, quizzes, projects, and exams.</p></div></div>
-        <div class="content-grid">
-          <article class="panel form-panel"><div class="panel-heading"><div><div class="eyebrow">NEW ACTIVITY</div><h3>Create an activity</h3></div><span class="panel-icon">✦</span></div>
-            <form id="activityForm" class="form-grid">
-              <label class="field full">Activity name<input name="name" required maxlength="90" placeholder="e.g. Chapter 1 Knowledge Check"></label>
-              <label class="field">Subject<input name="subject" required maxlength="50" placeholder="e.g. Mathematics"></label>
-              <label class="field">Activity type<select name="type"><option>Assignment</option><option>Quiz</option><option>Project</option><option>Exam</option><option>Performance Task</option></select></label>
-              <label class="field">Due date<input name="date" type="date" required></label>
-              <label class="field">Total points<input name="total" type="number" min="1" max="10000" value="100" required></label>
-              <button class="primary-button full" type="submit">Create activity <span>→</span></button>
-            </form>
-          </article>
-          <article class="panel"><div class="panel-heading"><div><div class="eyebrow">ACTIVITY LIBRARY</div><h3>Your activities</h3></div><span class="count-badge" id="activityCount">0</span></div><div id="activityList" class="stack-list"></div><div class="empty-state hidden" id="activitiesEmpty">No activities created yet.</div></article>
-        </div>
-      </section>
-
-      <section class="page" id="page-grades">
-        <div class="page-intro"><div><div class="eyebrow">MEASURE PROGRESS</div><h2>Gradebook</h2><p>Record scores and see how your students are doing.</p></div></div>
-        <div class="content-grid">
-          <article class="panel form-panel"><div class="panel-heading"><div><div class="eyebrow">NEW RECORD</div><h3>Add a grade</h3></div><span class="panel-icon">▦</span></div>
-            <form id="gradeForm" class="form-grid">
-              <label class="field full">Student<select name="studentId" id="gradeStudent" required></select></label>
-              <label class="field full">Assessment name<input name="assessment" required maxlength="80" placeholder="e.g. Quiz 1"></label>
-              <label class="field">Subject<input name="subject" required maxlength="50" placeholder="Subject"></label>
-              <label class="field">Grading period<select name="period"><option>Prelim</option><option>Midterm</option><option>Final</option></select></label>
-              <label class="field">Score<input name="score" type="number" min="0" step="0.01" required placeholder="85"></label>
-              <label class="field">Total points<input name="total" type="number" min="0.01" step="0.01" required placeholder="100"></label>
-              <button class="primary-button full" type="submit">Save grade <span>→</span></button>
-            </form>
-          </article>
-          <article class="panel"><div class="panel-heading"><div><div class="eyebrow">RECENT SCORES</div><h3>Grade records</h3></div><span class="count-badge" id="gradeCount">0</span></div>
-            <div class="table-wrap"><table><thead><tr><th>STUDENT / ASSESSMENT</th><th>SCORE</th><th>RESULT</th><th></th></tr></thead><tbody id="gradesTable"></tbody></table></div><div class="empty-state hidden" id="gradesEmpty">No grade records yet.</div>
-          </article>
-        </div>
-      </section>
-
-      <section class="page" id="page-attendance">
-        <div class="page-intro"><div><div class="eyebrow">SHOW UP & SHINE</div><h2>Attendance</h2><p>Mark daily attendance and keep a clear record.</p></div><label class="date-control">DATE <input id="attendanceDate" type="date"></label></div>
-        <div class="attendance-summary" id="attendanceSummary"></div>
-        <article class="panel"><div class="panel-heading"><div><div class="eyebrow">DAILY ROSTER</div><h3>Attendance register</h3></div><span class="count-badge" id="attendanceCount">0</span></div>
-          <div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>STATUS</th><th>NOTE</th></tr></thead><tbody id="attendanceTable"></tbody></table></div><div class="empty-state hidden" id="attendanceEmpty">Add students before taking attendance.</div>
-        </article>
-      </section>
-
-      <section class="page" id="page-rankings">
-        <div class="page-intro"><div><div class="eyebrow">CELEBRATE PROGRESS</div><h2>Class rankings</h2><p>Rankings are calculated from each student's average recorded score.</p></div></div>
-        <article class="panel ranking-panel"><div class="panel-heading"><div><div class="eyebrow">TOP PERFORMERS</div><h3>Leaderboard</h3></div><span class="live-label"><i></i> UPDATED LIVE</span></div><div id="rankingList" class="ranking-list"></div><div class="empty-state hidden" id="rankingsEmpty">Add grade records to build your leaderboard.</div></article>
-      </section>
-
-      <footer class="footer"><span>CLASSFLOW <b>●</b> CLASSROOM COMMAND CENTER</span><span>Made for better learning.</span></footer>
-    </main>
-  </div>
-
-  <div class="modal-backdrop hidden" id="studentModal" role="dialog" aria-modal="true" aria-labelledby="studentModalTitle">
-    <div class="modal-card">
-      <div class="modal-top"><div><div class="eyebrow">STUDENT PROFILE</div><h2 id="studentModalTitle">Add a student</h2></div><button class="icon-button" type="button" data-close-modal aria-label="Close">×</button></div>
-      <form id="studentForm" class="form-grid">
-        <input type="hidden" name="id">
-        <label class="field full">Full name<input name="name" required maxlength="80" placeholder="Student's full name"></label>
-        <label class="field">Student ID<input name="code" maxlength="30" placeholder="Auto-generated if blank"></label>
-        <label class="field">Email or note<input name="email" maxlength="100" placeholder="Optional"></label>
-        <label class="field full">Status<select name="status"><option>Active</option><option>Inactive</option></select></label>
-        <div class="modal-actions full"><button type="button" class="secondary-button" data-close-modal>Cancel</button><button class="primary-button" type="submit">Save student <span>→</span></button></div>
-      </form>
     </div>
-  </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-box"><div class="brand-mark">C</div><h2>Welcome to ClassFlow</h2><p>Sign in to open your classroom workspace.</p><form id="loginForm"><label class="field">Username<input name="username" autocomplete="username" required value="admin"></label><label class="field">Password<input name="password" type="password" autocomplete="current-password" required></label><p class="login-error" id="loginError"></p><button class="primary-button full">Sign in <span>→</span></button></form><small>Demo access: admin / 1234</small></div>
-  </div>
+    <!-- ========================================== -->
+    <!-- MAIN DASHBOARD -->
+    <!-- ========================================== -->
+    <div id="mainApp" class="app-shell" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-box">
+                <div class="logo sm">APEX<span>RANK</span></div>
+                <span class="status-pill"><i class="pulse"></i> Online</span>
+            </div>
+
+            <nav class="menu">
+                <button type="button" class="nav-btn active" data-tab="tab-overview">
+                    <span>01</span> Overview
+                </button>
+                <button type="button" class="nav-btn" data-tab="tab-students">
+                    <span>02</span> Students & Activities
+                </button>
+                <button type="button" class="nav-btn" data-tab="tab-attendance">
+                    <span>03</span> 5-Day Attendance
+                </button>
+                <button type="button" class="nav-btn" data-tab="tab-ranking">
+                    <span>04</span> Live Rankings
+                </button>
+            </nav>
+
+            <button type="button" id="logoutBtn" class="btn-logout">⏻ Logout</button>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <header class="topbar">
+                <div>
+                    <p class="crumb">STUDENT ATTENDANCE & RANKING SYSTEM</p>
+                    <h2 id="activeTitle">Overview</h2>
+                </div>
+                <div class="search-wrap">
+                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Linear search student / ID...">
+                </div>
+            </header>
+
+            <!-- TAB 1: OVERVIEW -->
+            <section id="tab-overview" class="view-panel active">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <span class="kpi-label">Total Students (Linked List)</span>
+                        <h3 id="kpiTotal">0</h3>
+                    </div>
+                    <div class="kpi-card accent-green">
+                        <span class="kpi-label">Rank #1 Leader</span>
+                        <h3 id="kpiTop">—</h3>
+                    </div>
+                    <div class="kpi-card accent-purple">
+                        <span class="kpi-label">Total Activities</span>
+                        <h3 id="kpiActivities">0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-head">
+                        <h3>Performance & Attendance Snapshot</h3>
+                        <span class="tag">Points = (Present × 10) + Total Activity Scores</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Present (5d)</th>
+                                    <th>Activity Scores</th>
+                                    <th>Total Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overviewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: ADD STUDENTS, ADD ACTIVITY & SCORES -->
+            <section id="tab-students" class="view-panel">
+                <div class="two-col">
+                    <!-- Add Student -->
+                    <div class="glass-card">
+                        <h3>+ Add Student Node</h3>
+                        <p class="muted">Inserts a new student dynamically into the Linked List.</p>
+                        <div class="stack-form">
+                            <input type="text" id="stuId" placeholder="Student ID (e.g. STU-05)">
+                            <input type="text" id="stuName" placeholder="Full Name">
+                            <button type="button" id="addStuBtn" class="btn-glow">Add Student</button>
+                        </div>
+                    </div>
+
+                    <!-- Add Activity -->
+                    <div class="glass-card">
+                        <h3>+ Create New Activity</h3>
+                        <p class="muted">Adds an activity column & score slot for every student.</p>
+                        <div class="stack-form">
+                            <input type="text" id="actTitle" placeholder="Activity Name (e.g. Quiz 1, Lab 2)">
+                            <input type="number" id="actMax" placeholder="Max Score (e.g. 50)" min="1" max="500" value="50">
+                            <button type="button" id="addActBtn" class="btn-glow alt">Add Activity</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Scores Matrix -->
+                <div class="glass-card mt-20">
+                    <div class="card-head">
+                        <h3>Student Roster & Activity Scores</h3>
+                        <span class="tag">Edit scores directly • Auto-updates Total Points & Rank</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead id="scoresHead"></thead>
+                            <tbody id="scoresBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: 5-DAY ATTENDANCE (2D ARRAY) -->
+            <section id="tab-attendance" class="view-panel">
+                <div class="glass-card">
+                    <div class="card-head">
+                        <h3>5-Day Attendance Matrix (2D Array)</h3>
+                        <span class="tag">Click day pills to toggle Present / Absent</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Day 1</th>
+                                    <th>Day 2</th>
+                                    <th>Day 3</th>
+                                    <th>Day 4</th>
+                                    <th>Day 5</th>
+                                    <th>Days Present</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: RANKINGS (SORTING) -->
+            <section id="tab-ranking" class="view-panel">
+                <div class="glass-card">
+                    <div class="card-head">
+                        <h3>Sorted Leaderboard</h3>
+                        <span class="tag">Descending Sort by Total Points</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Present</th>
+                                    <th>Scores Total</th>
+                                    <th>Total Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rankBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
