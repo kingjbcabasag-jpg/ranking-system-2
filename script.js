@@ -46,7 +46,7 @@ const colors=[
 
 function avatar(n){
  let i=[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%colors.length;
- return `<span class="avatar" style="background:${colors[i][0]};color:${colors[i][1]}">${esc(initials(n))}</span>`;
+ return <span class="avatar" style="background:${colors[i][0]};color:${colors[i][1]}">${esc(initials(n))}</span>;
 }
 
 function toast(m){
@@ -104,7 +104,7 @@ function renderStudents(){
  let old=sel.value;
 
  sel.innerHTML=data.students.map(s=>
-  `<option value="${s.id}">${esc(s.name)}</option>`
+  <option value="${s.id}">${esc(s.name)}</option>
  ).join('')||'<option value="">Add a student first</option>';
 
  if(data.students.some(s=>s.id===old))sel.value=old;
@@ -452,94 +452,175 @@ render();
 
 })();
 
-// CLASSFLOW LOGIN FIX 
+// CLASSFLOW AUTHENTICATION + POLISHED TRANSITIONS
 (function () {
-    const screen = document.getElementById("cfLoginScreen");
-    const form = document.getElementById("cfLoginForm");
+  'use strict';
 
-    if (!screen || !form) return;
+  const screen = document.getElementById('cfLoginScreen');
+  const form = document.getElementById('cfLoginForm');
 
-    const username = document.getElementById("cfUsername");
-    const password = document.getElementById("cfPassword");
-    const toggle = document.getElementById("cfTogglePassword");
-    const error = document.getElementById("cfLoginError");
+  if (!screen || !form) return;
 
-    // Check login status
-    function checkLogin() {
-        const loggedIn =
-            localStorage.getItem("classflowLoggedIn") === "true";
+  const username = document.getElementById('cfUsername');
+  const password = document.getElementById('cfPassword');
+  const toggle = document.getElementById('cfTogglePassword');
+  const error = document.getElementById('cfLoginError');
+  const submit = form.querySelector('[type="submit"]');
 
-        screen.classList.toggle("cf-login-hidden", loggedIn);
+  const SESSION_KEY = 'classflowLoggedIn';
+
+  function setAuthenticated(isLoggedIn) {
+    screen.classList.toggle('cf-login-hidden', isLoggedIn);
+    document.body.classList.toggle('cf-authenticated', isLoggedIn);
+
+    if (isLoggedIn) {
+      screen.setAttribute('aria-hidden', 'true');
+
+      setTimeout(() => {
+        screen.style.display = 'none';
+      }, 550);
+    } else {
+      screen.style.display = 'flex';
+      screen.removeAttribute('aria-hidden');
+
+      requestAnimationFrame(() => {
+        screen.classList.remove('cf-login-hidden');
+      });
+
+      setTimeout(() => username.focus(), 100);
+    }
+  }
+
+  function showError(message) {
+    error.textContent = message;
+    error.classList.add('visible');
+
+    form.classList.remove('cf-shake');
+    void form.offsetWidth;
+    form.classList.add('cf-shake');
+  }
+
+  function clearError() {
+    error.textContent = '';
+    error.classList.remove('visible');
+    form.classList.remove('cf-shake');
+  }
+
+  // Check saved login session
+  setAuthenticated(
+    localStorage.getItem(SESSION_KEY) === 'true'
+  );
+
+  // LOGIN
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    clearError();
+
+    const user = username.value.trim();
+    const pass = password.value;
+
+    if (!user || !pass) {
+      showError('Please enter both your username and password.');
+      return;
     }
 
-    checkLogin();
+    submit.disabled = true;
+    submit.classList.add('is-loading');
 
-    // Login
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    const label = submit.querySelector('span:first-child');
+    const oldLabel = label.textContent;
 
-        if (
-            username.value.trim() === "admin" &&
-            password.value === "1234"
-        ) {
-            localStorage.setItem("classflowLoggedIn", "true");
+    label.textContent = 'Authenticating...';
 
-            error.textContent = "";
-            screen.classList.add("cf-login-hidden");
+    window.setTimeout(() => {
+      if (
+        user.toLowerCase() === 'admin' &&
+        pass === '1234'
+      ) {
+        localStorage.setItem(SESSION_KEY, 'true');
 
-            if (typeof window.showToast === "function") {
-                window.showToast("Welcome back, Admin!");
-            }
-        } else {
-            error.textContent = "Incorrect username or password.";
+        label.textContent = 'Welcome back!';
+        setAuthenticated(true);
+
+        if (typeof toast === 'function') {
+          toast('Welcome back, Administrator!');
         }
+      } else {
+        showError('Incorrect username or password. Please try again.');
+
+        submit.disabled = false;
+        submit.classList.remove('is-loading');
+        label.textContent = oldLabel;
+
+        password.focus();
+        password.select();
+      }
+    }, 450);
+  });
+
+  // Clear error while typing
+  [username, password].forEach(field => {
+    field.addEventListener('input', clearError);
+  });
+
+  // SHOW / HIDE PASSWORD
+  toggle.addEventListener('click', function () {
+    const reveal = password.type === 'password';
+
+    password.type = reveal ? 'text' : 'password';
+    toggle.textContent = reveal ? 'HIDE' : 'SHOW';
+
+    toggle.setAttribute(
+      'aria-label',
+      reveal ? 'Hide password' : 'Show password'
+    );
+
+    password.focus();
+  });
+
+  // LOGOUT
+  window.classFlowLogout = function () {
+    if (localStorage.getItem(SESSION_KEY) !== 'true') return;
+
+    if (!window.confirm('Log out of ClassFlow?')) return;
+
+    localStorage.removeItem(SESSION_KEY);
+
+    form.reset();
+    clearError();
+
+    password.type = 'password';
+    toggle.textContent = 'SHOW';
+    toggle.setAttribute('aria-label', 'Show password');
+
+    submit.disabled = false;
+    submit.classList.remove('is-loading');
+
+    const label = submit.querySelector('span:first-child');
+
+    if (label) {
+      label.textContent = 'Sign In to Dashboard';
+    }
+
+    screen.style.display = 'flex';
+
+    requestAnimationFrame(() => {
+      setAuthenticated(false);
     });
 
-    // Show / Hide Password
-    toggle.addEventListener("click", function () {
-        const show = password.type === "password";
-        password.type = show ? "text" : "password";
-        toggle.textContent = show ? "HIDE" : "SHOW";
+    if (typeof toast === 'function') {
+      toast('You have been logged out.');
+    }
+  };
+
+  // Keyboard accessibility for logout
+  document.querySelectorAll('[onclick="classFlowLogout()"]').forEach(button => {
+    button.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        window.classFlowLogout();
+      }
     });
-
-    // Logout
-    window.classFlowLogout = function () {
-        if (!confirm("Are you sure you want to log out?")) return;
-
-        localStorage.removeItem("classflowLoggedIn");
-
-        form.reset();
-        password.type = "password";
-        toggle.textContent = "SHOW";
-
-        screen.classList.remove("cf-login-hidden");
-    };
+  });
 
 })();
-
-// CLASSFLOW LOGOUT BUTTON FIX 
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const logoutButton = document.getElementById("cfLogoutButton");
-
-    if (logoutButton) {
-        logoutButton.addEventListener("click", function () {
-
-            const confirmLogout = confirm(
-                "Are you sure you want to log out?"
-            );
-
-            if (confirmLogout) {
-                if (typeof window.classFlowLogout === "function") {
-                    window.classFlowLogout();
-                } else {
-                    localStorage.removeItem("classflowLoggedIn");
-                    location.reload();
-                }
-            }
-
-        });
-    }
-
-});

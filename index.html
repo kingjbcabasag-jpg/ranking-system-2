@@ -11,126 +11,120 @@
 </head>
 <body>
 
-<!-- CLASSFLOW MODERN LOGIN -->
-<div id="cfLoginScreen" class="cf-login-screen">
+<div id="cfLoginScreen" class="cf-login-screen" role="dialog" aria-modal="true" aria-label="ClassFlow administrator login">
+  <div class="cf-login-orb cf-orb-one"></div>
+  <div class="cf-login-orb cf-orb-two"></div>
 
-    <div class="cf-login-orb cf-orb-one"></div>
-    <div class="cf-login-orb cf-orb-two"></div>
+  <div class="cf-login-container">
+    <div class="cf-login-brand">
+      <div class="cf-brand-logo">CF</div>
+      <h1>CLASSFLOW</h1>
+      <p>STUDENT MANAGEMENT SYSTEM</p>
 
-    <div class="cf-login-container">
+      <div class="cf-brand-message">
+        <span>MANAGE.</span>
+        <span>LEARN.</span>
+        <span class="cf-purple-text">SUCCEED.</span>
+      </div>
 
-        <div class="cf-login-brand">
-            <div class="cf-brand-logo">CF</div>
-            <h1>CLASSFLOW</h1>
-            <p>STUDENT MANAGEMENT SYSTEM</p>
+      <p class="cf-brand-description">
+        Your classroom management experience,
+        simplified and organized in one place.
+      </p>
 
-            <div class="cf-brand-message">
-                <span>MANAGE.</span>
-                <span>LEARN.</span>
-                <span class="cf-purple-text">SUCCEED.</span>
-            </div>
-
-            <p class="cf-brand-description">
-                Your classroom management experience,
-                simplified and organized in one place.
-            </p>
-
-            <div class="cf-brand-decoration">
-                <div class="cf-decoration-circle">✓</div>
-                <div>
-                    <strong>Welcome to ClassFlow</strong>
-                    <small>Everything starts here.</small>
-                </div>
-            </div>
+      <div class="cf-brand-decoration">
+        <div class="cf-decoration-circle">✓</div>
+        <div>
+          <strong>Welcome to ClassFlow</strong>
+          <small>Everything starts here.</small>
         </div>
-
-        <div class="cf-login-form-panel">
-
-            <div class="cf-mobile-logo">CF</div>
-
-            <div class="cf-form-heading">
-                <span class="cf-welcome-label">ADMIN PORTAL</span>
-                <h2>Welcome Back!</h2>
-                <p>Please enter your account details to continue.</p>
-            </div>
-
-            <form id="cfLoginForm">
-
-                <div class="cf-field">
-                    <label for="cfUsername">Username</label>
-
-                    <div class="cf-input-wrap">
-                        <span>♙</span>
-                        <input
-                            type="text"
-                            id="cfUsername"
-                            placeholder="Enter your username"
-                            autocomplete="username"
-                            required
-                        >
-                    </div>
-                </div>
-
-                <div class="cf-field">
-                    <label for="cfPassword">Password</label>
-
-                    <div class="cf-input-wrap">
-                        <span>♙</span>
-                        <input
-                            type="password"
-                            id="cfPassword"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            id="cfTogglePassword"
-                            class="cf-show-password"
-                        >SHOW</button>
-                    </div>
-                </div>
-
-                <p id="cfLoginError" class="cf-login-error"></p>
-
-                <button type="submit" class="cf-login-button">
-                    <span>Sign In to Dashboard</span>
-                    <span>→</span>
-                </button>
-
-            </form>
-
-            <div class="cf-login-footer">
-                <span>✦</span>
-                CLASSFLOW MANAGEMENT SYSTEM
-                <span>✦</span>
-            </div>
-
-        </div>
+      </div>
     </div>
+
+    <div class="cf-login-form-panel">
+      <div class="cf-mobile-logo">CF</div>
+
+      <div class="cf-form-heading">
+        <span class="cf-welcome-label">ADMIN PORTAL</span>
+        <h2>Welcome Back!</h2>
+        <p>Please enter your account details to continue.</p>
+      </div>
+
+      <form id="cfLoginForm">
+        <div class="cf-field">
+          <label for="cfUsername">Username</label>
+          <div class="cf-input-wrap">
+            <span>♙</span>
+            <input type="text" id="cfUsername"
+              placeholder="Enter your username"
+              autocomplete="username" required>
+          </div>
+        </div>
+
+        <div class="cf-field">
+          <label for="cfPassword">Password</label>
+          <div class="cf-input-wrap">
+            <span>♙</span>
+            <input type="password" id="cfPassword"
+              placeholder="Enter your password"
+              autocomplete="current-password" required>
+            <button type="button" id="cfTogglePassword"
+              class="cf-show-password">SHOW</button>
+          </div>
+        </div>
+
+        <p id="cfLoginError" class="cf-login-error"
+          role="alert" aria-live="polite"></p>
+
+        <button type="submit" class="cf-login-button">
+          <span>Sign In to Dashboard</span>
+          <span>→</span>
+        </button>
+      </form>
+
+      <div class="cf-login-footer">
+        <span>✦</span>
+        CLASSFLOW MANAGEMENT SYSTEM
+        <span>✦</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="layout">
   <aside class="sidebar" id="sidebar">
-    <a class="brand" href="#"><b>C</b><span>class<span>flow</span><small>STUDENT MANAGEMENT</small></span></a>
+    <a class="brand" href="#">
+      <b>C</b>
+      <span>class<span>flow</span><small>STUDENT MANAGEMENT</small></span>
+    </a>
+
     <p class="nav-caption">WORKSPACE</p>
+
     <nav>
       <button class="nav active" data-page="overview">⌂ <span>Overview</span></button>
       <button class="nav" data-page="students">♙ <span>Students</span><i id="navCount">6</i></button>
       <button class="nav" data-page="activities">▤ <span>Activities</span></button>
       <button class="nav" data-page="grades">▧ <span>Grades</span></button>
-      <button class="nav" data-page="attendance">◷ <span>Attendance</span></button><button class="nav" data-page="rankings">🏆 <span>Rankings</span></button>
-
-<!-- LOGOUT BUTTON -->
-<button class="nav" type="button" onclick="classFlowLogout()">
-    🚪 <span>Logout</span>
-</button>
-
+      <button class="nav" data-page="attendance">◷ <span>Attendance</span></button>
+      <button class="nav" data-page="rankings">🏆 <span>Rankings</span></button>
+      <button class="nav logout-nav" type="button" onclick="classFlowLogout()">
+        🚪 <span>Logout</span>
+      </button>
     </nav>
+
     <div class="side-bottom">
-      <div class="tip"><b>✦ Stay organized</b><p>Manage your classroom records in one simple workspace.</p></div>
-      <div class="admin"><span>AD</span><div><b>Administrator</b><small>Class manager</small></div><i></i></div>
+      <div class="tip">
+        <b>✦ Stay organized</b>
+        <p>Manage your classroom records in one simple workspace.</p>
+      </div>
+      <div class="admin">
+        <span>AD</span>
+        <div>
+          <b>Administrator</b>
+          <small>Class manager</small>
+        </div>
+        <i></i>
+      </div>
     </div>
   </aside>
 
@@ -138,10 +132,16 @@
     <header class="topbar">
       <div class="top-left">
         <button id="menu" class="icon mobile">☰</button>
-        <div><small id="todayLabel">CLASSROOM WORKSPACE</small><h1 id="pageTitle">Overview</h1></div>
+        <div>
+          <small id="todayLabel">CLASSROOM WORKSPACE</small>
+          <h1 id="pageTitle">Overview</h1>
+        </div>
       </div>
+
       <div class="tools">
-        <label class="search">⌕ <input id="globalSearch" placeholder="Search students..."></label>
+        <label class="search">⌕
+          <input id="globalSearch" placeholder="Search students...">
+        </label>
         <button id="theme" class="icon" title="Toggle dark mode">◐</button>
         <button class="primary" id="quickAdd">＋ <span>Add student</span></button>
       </div>
@@ -149,27 +149,75 @@
 
     <section class="page active" id="overview">
       <div class="welcome">
-        <div><small>YOUR CLASS AT A GLANCE</small><h2>Good day, <em>Administrator.</em></h2><p>Here’s what’s happening in your classroom today.</p></div>
+        <div>
+          <small>YOUR CLASS AT A GLANCE</small>
+          <h2>Good day, <em>Administrator.</em></h2>
+          <p>Here’s what’s happening in your classroom today.</p>
+        </div>
         <span class="date-pill" id="dateDisplay"></span>
       </div>
+
       <div class="stats">
-        <article class="stat purple"><small>Total students</small><b id="sStudents">6</b><span>♙ &nbsp;Active class roster</span></article>
-        <article class="stat blue"><small>Activities</small><b id="sActivities">0</b><span>▤ &nbsp;Learning tasks created</span></article>
-        <article class="stat green"><small>Grade records</small><b id="sGrades">0</b><span>▧ &nbsp;Saved student grades</span></article>
-        <article class="stat orange"><small>Attendance today</small><b id="sAttendance">0%</b><span>◷ &nbsp;Based on today’s entries</span></article>
+        <article class="stat purple">
+          <small>Total students</small>
+          <b id="sStudents">6</b>
+          <span>♙ &nbsp;Active class roster</span>
+        </article>
+        <article class="stat blue">
+          <small>Activities</small>
+          <b id="sActivities">0</b>
+          <span>▤ &nbsp;Learning tasks created</span>
+        </article>
+        <article class="stat green">
+          <small>Grade records</small>
+          <b id="sGrades">0</b>
+          <span>▧ &nbsp;Saved student grades</span>
+        </article>
+        <article class="stat orange">
+          <small>Attendance today</small>
+          <b id="sAttendance">0%</b>
+          <span>◷ &nbsp;Based on today’s entries</span>
+        </article>
       </div>
+
       <div class="columns">
         <article class="panel">
-          <div class="panel-head"><div><h3>Student roster</h3><p>Your currently enrolled students</p></div><button class="link" data-goto="students">View all →</button></div>
-          <div class="table-scroll"><table><thead><tr><th>STUDENT</th><th>STUDENT ID</th><th>STATUS</th></tr></thead><tbody id="overviewStudents"></tbody></table></div>
+          <div class="panel-head">
+            <div>
+              <h3>Student roster</h3>
+              <p>Your currently enrolled students</p>
+            </div>
+            <button class="link" data-goto="students">View all →</button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>STUDENT</th><th>STUDENT ID</th><th>STATUS</th></tr></thead>
+              <tbody id="overviewStudents"></tbody>
+            </table>
+          </div>
         </article>
+
         <article class="panel">
-          <div class="panel-head"><div><h3>Recent activities</h3><p>Latest classroom tasks</p></div><button class="link" data-goto="activities">View all →</button></div>
-          <div id="recentActivities" class="feed empty">No activities yet. Create your first one.</div>
+          <div class="panel-head">
+            <div>
+              <h3>Recent activities</h3>
+              <p>Latest classroom tasks</p>
+            </div>
+            <button class="link" data-goto="activities">View all →</button>
+          </div>
+          <div id="recentActivities" class="feed empty">
+            No activities yet. Create your first one.
+          </div>
         </article>
       </div>
+
       <article class="panel quick">
-        <div class="panel-head"><div><h3>Quick actions</h3><p>Jump straight into your workflow</p></div></div>
+        <div class="panel-head">
+          <div>
+            <h3>Quick actions</h3>
+            <p>Jump straight into your workflow</p>
+          </div>
+        </div>
         <div class="quick-grid">
           <button data-modal="studentModal">＋ <b>Add a student</b><small>Build your class roster</small></button>
           <button data-goto="activities">▤ <b>Create activity</b><small>Record a new task</small></button>
@@ -179,89 +227,225 @@
     </section>
 
     <section class="page" id="students">
-      <div class="section-title"><div><small>CLASS DIRECTORY</small><h2>Students</h2><p>Manage your student list and information.</p></div><button class="primary" data-modal="studentModal">＋ Add student</button></div>
+      <div class="section-title">
+        <div>
+          <small>CLASS DIRECTORY</small>
+          <h2>Students</h2>
+          <p>Manage your student list and information.</p>
+        </div>
+        <button class="primary" data-modal="studentModal">＋ Add student</button>
+      </div>
+
       <article class="panel">
-        <div class="panel-head"><div><h3>All students <span class="count" id="studentCount"></span></h3><p>Names and student details</p></div><input class="filter" id="studentSearch" placeholder="Search students..."></div>
-        <div class="table-scroll"><table><thead><tr><th>STUDENT</th><th>STUDENT ID</th><th>EMAIL / NOTE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="studentsTable"></tbody></table></div>
+        <div class="panel-head">
+          <div>
+            <h3>All students <span class="count" id="studentCount"></span></h3>
+            <p>Names and student details</p>
+          </div>
+          <input class="filter" id="studentSearch" placeholder="Search students...">
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>STUDENT</th><th>STUDENT ID</th><th>EMAIL / NOTE</th><th>STATUS</th><th>ACTIONS</th></tr>
+            </thead>
+            <tbody id="studentsTable"></tbody>
+          </table>
+        </div>
         <div id="studentsEmpty" class="empty hide">No students found. Add a student to get started.</div>
       </article>
     </section>
 
     <section class="page" id="activities">
-      <div class="section-title"><div><small>CLASSROOM TASKS</small><h2>Activities</h2><p>Create activities and keep track of student tasks.</p></div></div>
+      <div class="section-title">
+        <div>
+          <small>CLASSROOM TASKS</small>
+          <h2>Activities</h2>
+          <p>Create activities and keep track of student tasks.</p>
+        </div>
+      </div>
+
       <div class="split">
         <article class="panel">
-          <div class="panel-head"><div><h3>Create activity</h3><p>Enter the activity details below.</p></div><span class="symbol blue">▤</span></div>
+          <div class="panel-head">
+            <div><h3>Create activity</h3><p>Enter the activity details below.</p></div>
+            <span class="symbol blue">▤</span>
+          </div>
           <form id="activityForm" class="form-grid">
-            <label class="wide">Activity name<input name="name" required placeholder="e.g. JavaScript Quiz 1"></label>
-            <label>Subject<input name="subject" required placeholder="e.g. Programming"></label>
-            <label>Due date<input name="date" type="date" required></label>
-            <label>Total points<input name="total" type="number" min="1" value="100" required></label>
-            <label>Activity type<select name="type"><option>Assignment</option><option>Quiz</option><option>Project</option><option>Performance Task</option><option>Exam</option></select></label>
-            <label class="wide">Description<textarea name="description" rows="3" placeholder="Optional instructions..."></textarea></label>
+            <label class="wide">Activity name
+              <input name="name" required placeholder="e.g. JavaScript Quiz 1">
+            </label>
+            <label>Subject
+              <input name="subject" required placeholder="e.g. Programming">
+            </label>
+            <label>Due date
+              <input name="date" type="date" required>
+            </label>
+            <label>Total points
+              <input name="total" type="number" min="1" value="100" required>
+            </label>
+            <label>Activity type
+              <select name="type">
+                <option>Assignment</option><option>Quiz</option>
+                <option>Project</option><option>Performance Task</option>
+                <option>Exam</option>
+              </select>
+            </label>
+            <label class="wide">Description
+              <textarea name="description" rows="3" placeholder="Optional instructions..."></textarea>
+            </label>
             <button class="primary wide">＋ Save activity</button>
           </form>
         </article>
+
         <article class="panel">
-          <div class="panel-head"><div><h3>Activity records</h3><p>All created activities</p></div><span class="count" id="activityCount">0 total</span></div>
+          <div class="panel-head">
+            <div><h3>Activity records</h3><p>All created activities</p></div>
+            <span class="count" id="activityCount">0 total</span>
+          </div>
           <div id="activityList" class="record-list empty">Your activities will appear here.</div>
         </article>
       </div>
     </section>
 
     <section class="page" id="grades">
-      <div class="section-title"><div><small>STUDENT PERFORMANCE</small><h2>Grades</h2><p>Record scores and monitor student performance.</p></div></div>
+      <div class="section-title">
+        <div>
+          <small>STUDENT PERFORMANCE</small>
+          <h2>Grades</h2>
+          <p>Record scores and monitor student performance.</p>
+        </div>
+      </div>
+
       <div class="split">
         <article class="panel">
-          <div class="panel-head"><div><h3>Enter a grade</h3><p>Choose a student and record their result.</p></div><span class="symbol green">▧</span></div>
+          <div class="panel-head">
+            <div><h3>Enter a grade</h3><p>Choose a student and record their result.</p></div>
+            <span class="symbol green">▧</span>
+          </div>
           <form id="gradeForm" class="form-grid">
-            <label class="wide">Student<select name="studentId" id="gradeStudent" required></select></label>
-            <label class="wide">Activity / assessment<input name="assessment" required placeholder="e.g. Quiz 1"></label>
-            <label>Subject<input name="subject" required placeholder="e.g. Mathematics"></label>
-            <label>Grading period<select name="period"><option>Prelim</option><option>Midterm</option><option>Final</option><option>Other</option></select></label>
-            <label>Score earned<input name="score" type="number" min="0" step=".01" required></label>
-            <label>Total points<input name="total" type="number" min="1" step=".01" required></label>
+            <label class="wide">Student
+              <select name="studentId" id="gradeStudent" required></select>
+            </label>
+            <label class="wide">Activity / assessment
+              <input name="assessment" required placeholder="e.g. Quiz 1">
+            </label>
+            <label>Subject
+              <input name="subject" required placeholder="e.g. Mathematics">
+            </label>
+            <label>Grading period
+              <select name="period">
+                <option>Prelim</option><option>Midterm</option>
+                <option>Final</option><option>Other</option>
+              </select>
+            </label>
+            <label>Score earned
+              <input name="score" type="number" min="0" step=".01" required>
+            </label>
+            <label>Total points
+              <input name="total" type="number" min="1" step=".01" required>
+            </label>
             <button class="primary wide">＋ Save grade</button>
           </form>
         </article>
+
         <article class="panel">
-          <div class="panel-head"><div><h3>Grade records</h3><p>Latest scores and percentages</p></div><span class="count" id="gradeCount">0 records</span></div>
-          <div class="table-scroll"><table><thead><tr><th>STUDENT</th><th>ASSESSMENT</th><th>SCORE</th><th>RESULT</th><th></th></tr></thead><tbody id="gradesTable"></tbody></table></div>
+          <div class="panel-head">
+            <div><h3>Grade records</h3><p>Latest scores and percentages</p></div>
+            <span class="count" id="gradeCount">0 records</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>STUDENT</th><th>ASSESSMENT</th><th>SCORE</th><th>RESULT</th><th></th></tr></thead>
+              <tbody id="gradesTable"></tbody>
+            </table>
+          </div>
           <div id="gradesEmpty" class="empty">No grade records yet.</div>
         </article>
       </div>
     </section>
 
     <section class="page" id="attendance">
-      <div class="section-title"><div><small>DAILY CLASS RECORD</small><h2>Attendance</h2><p>Mark each student present, late, or absent.</p></div><label class="date-control">Date <input id="attendanceDate" type="date"></label></div>
+      <div class="section-title">
+        <div>
+          <small>DAILY CLASS RECORD</small>
+          <h2>Attendance</h2>
+          <p>Mark each student present, late, or absent.</p>
+        </div>
+        <label class="date-control">Date <input id="attendanceDate" type="date"></label>
+      </div>
+
       <article class="panel">
-        <div class="panel-head"><div><h3>Daily attendance</h3><p>Changes save automatically in this browser.</p></div><span class="count" id="attendanceSummary">0 present</span></div>
-        <div class="table-scroll"><table><thead><tr><th>STUDENT</th><th>STATUS</th><th>NOTE</th></tr></thead><tbody id="attendanceTable"></tbody></table></div>
+        <div class="panel-head">
+          <div><h3>Daily attendance</h3><p>Changes save automatically in this browser.</p></div>
+          <span class="count" id="attendanceSummary">0 present</span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>STUDENT</th><th>STATUS</th><th>NOTE</th></tr></thead>
+            <tbody id="attendanceTable"></tbody>
+          </table>
+        </div>
         <div id="attendanceEmpty" class="empty hide">Add students to start taking attendance.</div>
       </article>
     </section>
 
     <section class="page" id="rankings">
-      <div class="section-title"><div><small>CLASS PERFORMANCE</small><h2>Rankings</h2><p>Ranked by average of recorded grades.</p></div></div>
-      <article class="panel"><div class="panel-head"><div><h3>Class leaderboard</h3><p>Based on available grade records</p></div></div><div id="rankingList" class="rank-list empty">Add grade records to see rankings.</div></article>
+      <div class="section-title">
+        <div>
+          <small>CLASS PERFORMANCE</small>
+          <h2>Rankings</h2>
+          <p>Ranked by average of recorded grades.</p>
+        </div>
+      </div>
+      <article class="panel">
+        <div class="panel-head">
+          <div><h3>Class leaderboard</h3><p>Based on available grade records</p></div>
+        </div>
+        <div id="rankingList" class="rank-list empty">Add grade records to see rankings.</div>
+      </article>
     </section>
-    <footer>© <span id="year"></span> ClassFlow <span>Made for a smoother classroom workflow ✦</span></footer>
+
+    <footer>
+      © <span id="year"></span> ClassFlow
+      <span>Made for a smoother classroom workflow ✦</span>
+    </footer>
   </main>
 </div>
 
 <div class="backdrop" id="studentModal">
   <div class="modal">
-    <div class="modal-head"><div><small>CLASS DIRECTORY</small><h3 id="modalTitle">Add student</h3><p>Add a student to your roster.</p></div><button class="icon" data-close>×</button></div>
+    <div class="modal-head">
+      <div>
+        <small>CLASS DIRECTORY</small>
+        <h3 id="modalTitle">Add student</h3>
+        <p>Add a student to your roster.</p>
+      </div>
+      <button class="icon" data-close>×</button>
+    </div>
+
     <form id="studentForm" class="form-grid">
       <input type="hidden" name="id">
-      <label class="wide">Student name<input name="name" required placeholder="Enter full name"></label>
-      <label>Student ID<input name="code" placeholder="e.g. STU-007"></label>
-      <label>Email / note<input name="email" placeholder="Optional"></label>
-      <label class="wide">Status<select name="status"><option>Active</option><option>Inactive</option></select></label>
-      <div class="modal-actions wide"><button type="button" class="secondary" data-close>Cancel</button><button class="primary">Save student</button></div>
+      <label class="wide">Student name
+        <input name="name" required placeholder="Enter full name">
+      </label>
+      <label>Student ID
+        <input name="code" placeholder="e.g. STU-007">
+      </label>
+      <label>Email / note
+        <input name="email" placeholder="Optional">
+      </label>
+      <label class="wide">Status
+        <select name="status"><option>Active</option><option>Inactive</option></select>
+      </label>
+      <div class="modal-actions wide">
+        <button type="button" class="secondary" data-close>Cancel</button>
+        <button class="primary">Save student</button>
+      </div>
     </form>
   </div>
 </div>
+
 <div id="toast" class="toast" role="status"></div>
 <script src="script.js"></script>
 </body>

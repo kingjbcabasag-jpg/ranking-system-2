@@ -130,248 +130,102 @@ tbody tr:hover{background:var(--soft)}
 footer{display:flex;justify-content:space-between;gap:12px;color:#a0a2b1;font-size:9px;padding:18px 2px 25px}
 .backdrop{position:fixed;inset:0;background:#15152b88;backdrop-filter:blur(7px);z-index:50;display:grid;place-items:center;padding:15px;opacity:0;visibility:hidden;transition:.25s}
 .backdrop.open{opacity:1;visibility:visible}
-.modal{width:min(460px,100%);background:var(--surface);padding:23px;border-radius:19px;box-shadow:0 25px 80px #0003;transform:translateY(15px) scale(.98);transition:.3s}
-.open .modal{transform:none}
-.modal-head{display:flex;justify-content:space-between;margin-bottom:19px}
-.modal-head h3{font:800 19px 'Plus Jakarta Sans';margin:6px 0}
-.modal-head p{font-size:10px;color:var(--muted);margin:0}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:5px}
-.secondary{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 14px;color:var(--muted);font-size:10px}
-.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);background:#202039;color:white;padding:12px 17px;border-radius:11px;font-size:10px;opacity:0;pointer-events:none;transition:.3s;z-index:80}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-body.dark{--bg:#111322;--surface:#1b1d30;--soft:#24263d;--ink:#f1f1fa;--muted:#a0a2ba;--line:#303249;--shadow:0 10px 30px #0002}
-body.dark .count{background:#332d53;color:#c1b5ff}
-body.dark .status.inactive{background:#34364b}
-body.dark .quick-grid button{background:var(--soft)}
-body.dark td{color:#b1b3c6}
+.modal{width:min(460px,100%);background:var(--surface);padding:23px;border-radius:18px;box-shadow:0 25px 80px #0003;transform:translateY(12px) scale(.98);transition:.25s}
+.backdrop.open .modal{transform:none}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.modal-head h3{margin:6px 0;font:700 17px 'Plus Jakarta Sans'}
+.modal-head p{margin:0;color:var(--muted);font-size:10px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px}
+.secondary{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:9px;padding:10px 14px;font-size:11px;font-weight:700}
+.toast{position:fixed;bottom:22px;right:22px;z-index:100;background:#22213a;color:white;border-radius:11px;padding:12px 17px;font-size:11px;box-shadow:0 10px 30px #0002;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+body.dark{
+ --bg:#111322;--surface:#1b1e31;--soft:#22263b;--ink:#f1f0fb;
+ --muted:#a0a3bb;--line:#30344d;--shadow:0 12px 35px #0002
+}
+body.dark .stat,body.dark .panel{box-shadow:var(--shadow)}
+body.dark td{color:#b5b7ca}
+body.dark tbody tr:hover{background:#ffffff08}
+body.dark .count{background:#302b50;color:#c0b2ff}
+body.dark .status.inactive{background:#35384b;color:#b6b7c6}
+body.dark .quick-grid button{color:#b9a9ff}
 @media(max-width:1100px){
- main{padding:0 24px}
  .stats{grid-template-columns:repeat(2,1fr)}
- .columns,.split{grid-template-columns:1fr}
+ .columns{grid-template-columns:1fr}
+ .split{grid-template-columns:1fr}
 }
 @media(max-width:760px){
- .sidebar{transform:translateX(-105%);box-shadow:15px 0 40px #1112}
- .sidebar.open{transform:none}
- main{margin:0;padding:0 16px}
- .topbar{height:73px}
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ main{margin-left:0;padding:0 17px}
  .mobile{display:block}
- .topbar h1{font-size:17px}
- .search{width:37px;justify-content:center;padding:9px}
- .search input{display:none}
- .search:focus-within{width:150px}
- .search:focus-within input{display:block;width:110px}
+ .topbar{height:76px}
+ .search{display:none}
  .tools{gap:6px}
- .tools #theme{display:none}
- .primary{padding:10px 12px}
- .tools .primary{font-size:16px}
- .tools .primary span{display:none}
- .page{padding-top:23px}
+ .primary{padding:10px}
+ .primary span{display:none}
+ .welcome,.section-title{align-items:flex-start;flex-direction:column}
  .welcome h2,.section-title h2{font-size:23px}
- .welcome p,.section-title p{font-size:10px}
- .date-pill{font-size:9px}
- .panel{padding:15px;border-radius:15px}
- .quick-grid{grid-template-columns:1fr}
- .section-title{align-items:flex-start}
- .section-title>.primary{font-size:10px}
- .panel-head{align-items:flex-start;flex-wrap:wrap}
- .filter{width:100%}
- footer{flex-wrap:wrap}
- .rank{grid-template-columns:30px 1fr 50px;gap:8px}
- .bar{display:none}
- .rank-score{grid-column:3;grid-row:1}
-}
-@media(max-width:430px){
- .stats{gap:8px}
+ .stats{gap:9px}
  .stat{padding:13px}
  .stat b{font-size:24px}
- .stat small{font-size:9px}
- .stat span{font-size:8px}
- .date-pill{display:none}
+ .panel{padding:15px}
+ .quick-grid{grid-template-columns:1fr}
+ .rank{grid-template-columns:30px 1fr 55px}
+ .rank .bar{grid-column:2/4;grid-row:2}
+ footer{flex-direction:column}
+}
+@media(max-width:420px){
+ .stats{grid-template-columns:1fr 1fr}
  .form-grid{grid-template-columns:1fr}
  .form-grid .wide{grid-column:auto}
- .modal{padding:18px}
- .welcome h2{font-size:21px}
+ .rank{gap:8px}
+ .rank-score{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
-/* LOGIN SCREEN */
-.login-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: linear-gradient(135deg, #17102e, #5634a5, #9270df);
-    transition: opacity .4s ease, visibility .4s ease;
-}
 
-.login-screen.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.login-card {
-    width: 100%;
-    max-width: 420px;
-    padding: 38px 32px;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 25px 70px rgba(0,0,0,.25);
-    animation: loginAppear .6s ease;
-}
-
-@keyframes loginAppear {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(.96);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.login-logo {
-    width: 65px;
-    height: 65px;
-    display: grid;
-    place-items: center;
-    margin: 0 auto 20px;
-    color: white;
-    font-size: 25px;
-    font-weight: 800;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #7546d8, #a78bfa);
-}
-
-.login-card h1 {
-    text-align: center;
-    color: #241b3c;
-    margin-bottom: 8px;
-}
-
-.login-card > p {
-    text-align: center;
-    color: #858095;
-    font-size: 14px;
-    margin-bottom: 28px;
-}
-
-.login-input {
-    margin-bottom: 20px;
-}
-
-.login-input label {
-    display: block;
-    font-weight: 600;
-    font-size: 13px;
-    color: #413653;
-    margin-bottom: 8px;
-}
-
-.login-input input {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #e5e0ee;
-    border-radius: 12px;
-    outline: none;
-    font-size: 14px;
-    transition: .3s;
-}
-
-.login-input input:focus {
-    border-color: #8054df;
-    box-shadow: 0 0 0 3px rgba(128,84,223,.12);
-}
-
-.password-wrapper {
-    display: flex;
-    gap: 8px;
-}
-
-.password-wrapper input {
-    flex: 1;
-    min-width: 0;
-}
-
-.password-wrapper button {
-    border: none;
-    background: #eee8fb;
-    color: #7045c4;
-    padding: 0 12px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.login-button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #7546d8, #9b72ed);
-    transition: .3s;
-}
-
-.login-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(117,70,216,.3);
-}
-
-.login-error {
-    color: #dc3545 !important;
-    font-size: 13px;
-    margin-bottom: 12px !important;
-}
-
-.login-footer {
-    margin-top: 25px !important;
-    margin-bottom: 0 !important;
-    font-size: 11px !important;
-}
-
-@media (max-width: 480px) {
-    .login-card {
-        padding: 30px 22px;
-    }
-}
-
-/* CLASSFLOW LOGOUT BUTTON */
-
-.cf-logout-container {
-    margin-top: auto;
-    padding: 15px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#cfLogoutButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    padding: 14px;
-    border: 1px solid rgba(239, 68, 68, .2);
-    border-radius: 12px;
-    background: rgba(239, 68, 68, .08);
-    color: #ef4444;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: .3s ease;
-}
-
-#cfLogoutButton:hover {
-    background: #ef4444;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(239, 68, 68, .2);
-}
+/* ===== PREMIUM CLASSFLOW LOGIN ===== */
+.cf-login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:auto;padding:28px;background:radial-gradient(circle at 12% 18%,rgba(153,119,255,.28),transparent 30%),radial-gradient(circle at 88% 82%,rgba(65,129,232,.22),transparent 32%),linear-gradient(135deg,#111326 0%,#211b46 52%,#38256f 100%);opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease}
+.cf-login-screen::before,.cf-login-screen::after{content:"";position:absolute;border:1px solid rgba(255,255,255,.09);border-radius:50%;width:420px;height:420px;pointer-events:none;animation:cfFloat 12s ease-in-out infinite}
+.cf-login-screen::before{top:-230px;right:-100px}.cf-login-screen::after{bottom:-300px;left:-110px;width:560px;height:560px;animation-delay:-5s}
+.cf-login-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.cf-login-orb{position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none}
+.cf-orb-one{width:230px;height:230px;left:8%;bottom:8%;background:radial-gradient(circle,rgba(131,99,255,.22),transparent 70%)}
+.cf-orb-two{width:300px;height:300px;right:5%;top:5%;background:radial-gradient(circle,rgba(74,156,255,.16),transparent 70%)}
+.cf-login-container{position:relative;z-index:1;width:min(100%,980px);min-height:570px;display:grid;grid-template-columns:1fr .88fr;overflow:hidden;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.96);box-shadow:0 35px 100px rgba(0,0,0,.38);animation:cfCardIn .75s cubic-bezier(.2,.8,.2,1) both}
+.cf-login-brand{padding:55px 48px;color:#fff;background:radial-gradient(circle at 80% 15%,rgba(170,146,255,.35),transparent 35%),linear-gradient(145deg,#211b48,#32256a 65%,#45328b);display:flex;flex-direction:column;justify-content:center}
+.cf-brand-logo,.cf-mobile-logo{width:54px;height:54px;display:grid;place-items:center;border-radius:17px;color:white;font:800 19px 'Plus Jakarta Sans';background:linear-gradient(140deg,#b5a2ff,#7456e8);box-shadow:0 12px 28px rgba(113,82,230,.35)}
+.cf-login-brand h1{font:800 24px 'Plus Jakarta Sans';letter-spacing:3px;margin:18px 0 2px;color:white}
+.cf-login-brand>p{font-size:9px;letter-spacing:2px;color:#bcb4e8;margin:0}
+.cf-brand-message{display:flex;flex-direction:column;margin:52px 0 18px;font:800 clamp(32px,4vw,48px)/1.12 'Plus Jakarta Sans';letter-spacing:-2px}
+.cf-purple-text{color:#ad9aff}.cf-brand-description{max-width:330px!important;font-size:12px!important;line-height:1.8;letter-spacing:0!important;color:#d0cbed!important}
+.cf-brand-decoration{display:flex;align-items:center;gap:12px;margin-top:42px;padding-top:22px;border-top:1px solid #ffffff24}
+.cf-decoration-circle{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#ffffff1c;color:#b9a9ff}
+.cf-brand-decoration strong,.cf-brand-decoration small{display:block}.cf-brand-decoration strong{font-size:11px}.cf-brand-decoration small{font-size:9px;color:#bcb4e8;margin-top:4px}
+.cf-login-form-panel{padding:54px 48px;display:flex;flex-direction:column;justify-content:center}
+.cf-mobile-logo{display:none}.cf-welcome-label{font-size:9px;letter-spacing:2px;font-weight:800;color:#795fe4}
+.cf-form-heading h2{font:800 29px 'Plus Jakarta Sans';letter-spacing:-1.2px;color:#201d35;margin:12px 0 7px}
+.cf-form-heading p{font-size:11px;color:#858399;margin:0 0 32px}
+#cfLoginForm{display:grid;gap:19px}.cf-field label{display:block;font-size:10px;font-weight:700;color:#4d4a60;margin-bottom:8px}
+.cf-input-wrap{height:48px;display:flex;align-items:center;gap:10px;padding:0 13px;border:1px solid #e9e6f1;border-radius:12px;background:#faf9fd;transition:border .2s,box-shadow .2s,transform .2s}
+.cf-input-wrap:focus-within{border-color:#957ff0;box-shadow:0 0 0 4px rgba(126,99,226,.12);transform:translateY(-1px)}
+.cf-input-wrap>span{font-size:15px;color:#8a7bc0}.cf-input-wrap input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#27243c;font:12px 'DM Sans'}
+.cf-input-wrap input::placeholder{color:#aaa7b8}.cf-show-password{border:0;background:transparent;color:#765de0;font-size:9px;font-weight:800;letter-spacing:.7px;cursor:pointer;padding:8px}
+.cf-login-error{display:none;margin:0;color:#d64d64;font-size:10px;line-height:1.5}.cf-login-error.visible{display:block}
+.cf-login-button{width:100%;min-height:49px;display:flex;align-items:center;justify-content:space-between;padding:0 17px;border:0;border-radius:12px;color:#fff;background:linear-gradient(110deg,#8569f0,#6048d2);font:700 11px 'DM Sans';box-shadow:0 10px 24px rgba(111,83,218,.25);cursor:pointer;transition:transform .25s,box-shadow .25s,filter .25s}
+.cf-login-button:hover{transform:translateY(-3px);box-shadow:0 15px 28px rgba(111,83,218,.34);filter:saturate(1.12)}.cf-login-button:active{transform:translateY(-1px) scale(.99)}
+.cf-login-button:disabled{opacity:.75;cursor:wait}.cf-login-button.is-loading span:last-child{animation:cfPulse .8s infinite alternate}
+.cf-login-footer{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:35px;color:#a5a1b5;font-size:8px;font-weight:700;letter-spacing:1.1px}
+.cf-login-footer span{color:#8b74e8}.cf-shake{animation:cfShake .35s ease}
+@keyframes cfCardIn{from{opacity:0;transform:translateY(22px) scale(.975)}to{opacity:1;transform:none}}
+@keyframes cfFloat{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(18px,-20px,0)}}
+@keyframes cfPulse{from{opacity:.5}to{opacity:1}}
+@keyframes cfShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.nav[onclick="classFlowLogout()"]{margin-top:12px;color:#ff9ba7;border:1px solid #ff65701f;background:#ff65700d}
+.nav[onclick="classFlowLogout()"]:hover{background:#e34c6040;color:#fff}
+button,input,select,textarea{font-family:inherit}
+button:focus-visible,.nav:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(132,106,239,.35);outline-offset:2px}
+@media(max-width:760px){.cf-login-screen{padding:16px}.cf-login-container{grid-template-columns:1fr;max-width:440px;min-height:0;border-radius:23px}.cf-login-brand{display:none}.cf-login-form-panel{padding:36px 27px 28px}.cf-mobile-logo{display:grid;margin:0 auto 24px}.cf-form-heading{text-align:center}.cf-form-heading h2{font-size:26px}.cf-form-heading p{margin-bottom:26px}.cf-login-footer{margin-top:27px}}
+@media(prefers-reduced-motion:reduce){.cf-login-screen::before,.cf-login-screen::after,.cf-login-container,.cf-shake{animation:none!important}}
