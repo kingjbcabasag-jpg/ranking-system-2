@@ -453,60 +453,68 @@ render();
 })();
 
 
-    /* ===== CLASSFLOW LOGIN SYSTEM ===== */
+    /* ===== CLASSFLOW LOGIN FIX ===== */
 
 (function () {
-    const loginScreen = document.getElementById("loginScreen");
-    const loginForm = document.getElementById("loginForm");
-    const usernameInput = document.getElementById("loginUsername");
-    const passwordInput = document.getElementById("loginPassword");
-    const togglePassword = document.getElementById("togglePassword");
-    const loginError = document.getElementById("loginError");
+    const screen = document.getElementById("cfLoginScreen");
+    const form = document.getElementById("cfLoginForm");
 
-    if (!loginScreen || !loginForm) return;
+    if (!screen || !form) return;
 
-    // Check current login session
-    if (sessionStorage.getItem("classflowLoggedIn") === "true") {
-        loginScreen.classList.add("hidden");
+    const username = document.getElementById("cfUsername");
+    const password = document.getElementById("cfPassword");
+    const toggle = document.getElementById("cfTogglePassword");
+    const error = document.getElementById("cfLoginError");
+
+    // Check login status
+    function checkLogin() {
+        const loggedIn =
+            localStorage.getItem("classflowLoggedIn") === "true";
+
+        screen.classList.toggle("cf-login-hidden", loggedIn);
     }
 
-    // Login validation
-    loginForm.addEventListener("submit", function (e) {
+    checkLogin();
+
+    // Login
+    form.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value;
+        if (
+            username.value.trim() === "admin" &&
+            password.value === "1234"
+        ) {
+            localStorage.setItem("classflowLoggedIn", "true");
 
-        if (username === "admin" && password === "1234") {
-            sessionStorage.setItem("classflowLoggedIn", "true");
+            error.textContent = "";
+            screen.classList.add("cf-login-hidden");
 
-            loginError.textContent = "";
-            loginScreen.classList.add("hidden");
-
-            if (typeof showToast === "function") {
-                showToast("Welcome back, Admin!");
+            if (typeof window.showToast === "function") {
+                window.showToast("Welcome back, Admin!");
             }
         } else {
-            loginError.textContent = "Incorrect username or password!";
+            error.textContent = "Incorrect username or password.";
         }
     });
 
-    // Show and hide password
-    togglePassword.addEventListener("click", function () {
-        const show = passwordInput.type === "password";
-
-        passwordInput.type = show ? "text" : "password";
-        togglePassword.textContent = show ? "Hide" : "Show";
+    // Show / Hide Password
+    toggle.addEventListener("click", function () {
+        const show = password.type === "password";
+        password.type = show ? "text" : "password";
+        toggle.textContent = show ? "HIDE" : "SHOW";
     });
 
-    // Logout function
+    // Logout
     window.classFlowLogout = function () {
-        sessionStorage.removeItem("classflowLoggedIn");
-        loginForm.reset();
+        if (!confirm("Are you sure you want to log out?")) return;
 
-        passwordInput.type = "password";
-        togglePassword.textContent = "Show";
+        localStorage.removeItem("classflowLoggedIn");
 
-        loginScreen.classList.remove("hidden");
+        form.reset();
+        password.type = "password";
+        toggle.textContent = "SHOW";
+
+        screen.classList.remove("cf-login-hidden");
     };
+
 })();
