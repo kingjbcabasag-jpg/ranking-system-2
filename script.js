@@ -452,9 +452,7 @@ render();
 
 })();
 
-
-    /* ===== CLASSFLOW LOGIN FIX ===== */
-
+// CLASSFLOW LOGIN FIX 
 (function () {
     const screen = document.getElementById("cfLoginScreen");
     const form = document.getElementById("cfLoginForm");
